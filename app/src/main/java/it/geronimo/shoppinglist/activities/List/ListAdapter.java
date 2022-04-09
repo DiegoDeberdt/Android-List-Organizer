@@ -29,9 +29,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     private final Context context;
     private final List<ShoppingListWithCalculatedValues> localDataSet;
 
-    /**
-     * Provide a reference to the type of views that you are using (custom ViewHolder).
-     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView listName;
@@ -49,30 +46,22 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         }
     }
 
-    /**
-     * Initialize the dataset of the Adapter.
-     */
     public ListAdapter(Context context, List<ShoppingListWithCalculatedValues> dataSet) {
         this.context = context;
         localDataSet = dataSet;
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        // Create a new view, which defines the UI of the list item
+
         View view = LayoutInflater.from(viewGroup.getContext())
                                   .inflate(R.layout.list_row_item, viewGroup, false);
 
         return new ViewHolder(view);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int position) {
-
-        // Get element from your dataset at this position and replace the
-        // contents of the view with that element
 
         ShoppingListWithCalculatedValues item = localDataSet.get(position);
 
@@ -81,8 +70,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
         String listSize = item.numberOfUnFlaggedItems + "/" + item.totalNumberOfItems;
         viewHolder.listSize.setText(listSize);
-
-        // Define click listener for the ViewHolder's View
 
         viewHolder.mainLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,21 +85,19 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             @Override
             public void onClick(View view) {
 
-                //creating a popup menu
-                PopupMenu popup = new PopupMenu(context, viewHolder.buttonViewOption);
-
-                //inflating menu from xml resource
-                popup.inflate(R.menu.list_row_menu);
-
-                //adding click listener
-                popup.setOnMenuItemClickListener(menuItem -> {
+                PopupMenu popupMenu = new PopupMenu(context, viewHolder.buttonViewOption);
+                popupMenu.inflate(R.menu.list_row_menu);
+                popupMenu.setOnMenuItemClickListener(menuItem -> {
                     switch (menuItem.getItemId()) {
-                        case R.id.menu_item_edit:
+                        case R.id.menu_item_rename:
                             Intent intent = new Intent(context, ListEditActivity.class);
                             intent.putExtra(Extra.CRUD, Crud.UPDATE);
                             intent.putExtra(Extra.LIST_ID, item.id);
                             intent.putExtra(Extra.NAME, item.displayName);
                             context.startActivity(intent);
+                            return true;
+                        case R.id.menu_item_copy:
+
                             return true;
                         case R.id.menu_item_delete:
                             ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
@@ -124,13 +109,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                             return false;
                     }
                 });
-                //displaying the popup
-                popup.show();
+
+                popupMenu.show();
             }
         });
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return localDataSet.size();

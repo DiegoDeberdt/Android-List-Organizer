@@ -38,7 +38,7 @@ public class ItemEditActivity extends AppCompatActivity {
 //        else processIntent();
 
         processIntent();
-        initEditButtonLabel();
+        initTitleAndLabel();
     }
 
     private void processInstanceState(Bundle savedInstanceState) {
@@ -72,14 +72,16 @@ public class ItemEditActivity extends AppCompatActivity {
         }
     }
 
-    private void initEditButtonLabel() {
+    private void initTitleAndLabel() {
         Button button = findViewById(R.id.itemEditButton);
         switch(this.crudAction) {
             case CREATE:
-                button.setText("Add New Shopping Item");
+                button.setText(R.string.add_item);
+                setTitle(R.string.add_list_item);
                 break;
             case UPDATE:
-                button.setText("Update Shopping Item");
+                button.setText(R.string.update_item);
+                setTitle(R.string.edit_list_item);
                 break;
         }
     }
@@ -88,7 +90,7 @@ public class ItemEditActivity extends AppCompatActivity {
 
         TextInputEditText nameTextView = findViewById(R.id.itemEditName);
         String displayName = nameTextView.getText().toString();
-        if (displayName.trim().length() == 0) displayName = "New Shopping Item";
+        if (displayName.trim().length() == 0) displayName = getString(R.string.new_item);
 
         TextInputEditText descriptionTextView = findViewById(R.id.itemEditDescription);
         String description = descriptionTextView.getText().toString();
@@ -102,22 +104,13 @@ public class ItemEditActivity extends AppCompatActivity {
         ShoppingListItemDao dao = db.shoppingListItemModel();
 
         ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
-
         if (this.crudAction == Crud.CREATE) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    dao.insert(shoppingListItem);
-                }
-            });
+            executor.execute(() -> dao.insert(shoppingListItem));
         }
         else if (this.crudAction == Crud.UPDATE) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    shoppingListItem.id = shoppingListItemId;
-                    dao.update(shoppingListItem);
-                }
+            executor.execute(() -> {
+                shoppingListItem.id = shoppingListItemId;
+                dao.update(shoppingListItem);
             });
         }
 

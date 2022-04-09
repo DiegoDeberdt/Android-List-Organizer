@@ -34,18 +34,24 @@ public class ListEditActivity extends AppCompatActivity {
         if (!intent.hasExtra(Extra.CRUD)) throw new ExtrasNotFoundException(Extra.CRUD);
         this.crudAction = (Crud)intent.getSerializableExtra(Extra.CRUD);
 
+        initTitleAndLabel(intent);
+    }
+
+    private void initTitleAndLabel(Intent intent) {
         Button button = findViewById(R.id.listEditButton);
         TextInputEditText listEditName = findViewById(R.id.listEditName);
 
-        switch(crudAction) {
+        switch(this.crudAction) {
             case CREATE:
-                button.setText("Create List");
+                button.setText(R.string.create_list);
+                setTitle(R.string.new_list);
                 break;
             case UPDATE:
-                button.setText("Update List Name");
+                button.setText(R.string.rename_list);
+                setTitle(R.string.rename_list);
 
                 if (!intent.hasExtra(Extra.LIST_ID)) throw new ExtrasNotFoundException(Extra.LIST_ID);
-                this.shoppingListId = (int)intent.getLongExtra(Extra.LIST_ID, -1);
+                this.shoppingListId = intent.getLongExtra(Extra.LIST_ID, -1);
                 listEditName.setText(intent.getStringExtra(Extra.NAME));
                 break;
         }
@@ -54,33 +60,18 @@ public class ListEditActivity extends AppCompatActivity {
     public void buttonClick(View view) {
         TextInputEditText textView = findViewById(R.id.listEditName);
         String displayName = textView.getText().toString();
-        if (displayName.trim().length() == 0) displayName = "New List";
+        if (displayName.trim().length() == 0) displayName = getString(R.string.new_list);
 
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.displayName = displayName;
+        shoppingList.id = this.shoppingListId;
 
         ShoppingListDb db = ShoppingListDb.getFileDatabase(getApplication());
         ShoppingListDao dao = db.shoppingListModel();
 
         ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
-
-        if (this.crudAction == Crud.CREATE) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    dao.insert(shoppingList);
-                }
-            });
-        }
-        else if (this.crudAction == Crud.UPDATE) {
-            shoppingList.id = this.shoppingListId;
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    dao.update(shoppingList);
-                }
-            });
-        }
+        if (this.crudAction == Crud.CREATE) executor.execute(() -> dao.insert(shoppingList));
+        else if (this.crudAction == Crud.UPDATE) executor.execute(() -> dao.update(shoppingList));
 
         finish();
     }

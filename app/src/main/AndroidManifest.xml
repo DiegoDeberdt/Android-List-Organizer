@@ -11,17 +11,17 @@
         android:theme="@style/Theme.ShoppingList">
 
         <activity
-            android:label="Edit Shopping List Items"
+            android:label="@string/edit_list_item"
             android:name=".activities.Item.ItemEditActivity"
             android:exported="false" />
 
         <activity
-            android:label="Edit Shopping List"
+            android:label="@string/edit_list"
             android:name=".activities.List.ListEditActivity"
             android:exported="false" />
 
         <activity
-            android:label="Shopping List Items"
+            android:label="@string/list_items"
             android:name=".activities.Item.ItemActivity"
             android:exported="false" />
 

@@ -30,11 +30,9 @@ public class ItemActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if (savedInstanceState != null) {
-            this.shoppingListId = savedInstanceState.getLong(BUNDLE_ID);
-        } else {
-            this.shoppingListId = intent.getLongExtra(Extra.LIST_ID, -1);
-        }
+        if (savedInstanceState != null) this.shoppingListId = savedInstanceState.getLong(BUNDLE_ID);
+        else this.shoppingListId = intent.getLongExtra(Extra.LIST_ID, -1);
+
         if (this.shoppingListId == -1) throw new ExtrasNotFoundException(Extra.LIST_ID);
 
         setTitle(intent.getStringExtra(Extra.NAME));

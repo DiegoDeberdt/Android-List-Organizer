@@ -31,9 +31,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     private final Context context;
     private final List<ShoppingListItem> localDataSet;
 
-    /**
-     * Provide a reference to the type of views that you are using (custom ViewHolder).
-     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView itemName;
@@ -45,8 +42,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         public ViewHolder(View view) {
             super(view);
 
-            // Define click listener for the ViewHolder's View
-
             this.itemName = view.findViewById(R.id.item_name);
             this.itemDescription = view.findViewById(R.id.item_description);
             this.itemCheckbox = view.findViewById(R.id.item_checkbox);
@@ -55,26 +50,20 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         }
     }
 
-    /**
-     * Initialize the dataset of the Adapter.
-     */
     public ItemAdapter(Context context, List<ShoppingListItem> dataSet) {
-
         this.context = context;
         this.localDataSet = dataSet;
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
     public ItemAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        // Create a new view, which defines the UI of the list item
+
         View view = LayoutInflater.from(viewGroup.getContext())
                                   .inflate(R.layout.item_row_item, viewGroup, false);
 
         return new ItemAdapter.ViewHolder(view);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ItemAdapter.ViewHolder viewHolder, final int position) {
 
@@ -114,7 +103,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
                 PopupMenu popup = new PopupMenu(context, viewHolder.buttonViewOption);
 
                 //inflating menu from xml resource
-                popup.inflate(R.menu.list_row_menu);
+                popup.inflate(R.menu.item_row_menu);
 
                 //adding click listener
                 popup.setOnMenuItemClickListener(menuItem -> {

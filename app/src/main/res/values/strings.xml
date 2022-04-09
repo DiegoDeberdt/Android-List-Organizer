@@ -4,4 +4,18 @@
     <string name="name">Name</string>
     <string name="description">Description</string>
     <string name="list_name">List Name</string>
+    <string name="rename">Rename</string>
+    <string name="delete">Delete</string>
+    <string name="copy">Copy</string>
+    <string name="create_list">Create List</string>
+    <string name="rename_list">Rename List</string>
+    <string name="add_item">Add Item</string>
+    <string name="update_item">Update Item</string>
+    <string name="new_item">New Item</string>
+    <string name="new_list">New List</string>
+    <string name="edit">Edit</string>
+    <string name="edit_list_item">Edit Item</string>
+    <string name="add_list_item">Add Item</string>
+    <string name="edit_list">Edit List</string>
+    <string name="list_items">List Items</string>
 </resources>
