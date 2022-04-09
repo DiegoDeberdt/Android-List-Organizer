@@ -22,6 +22,9 @@ import it.geronimo.shoppinglist.activities.Item.ItemActivity;
 import it.geronimo.shoppinglist.repository.ShoppingListDb;
 import it.geronimo.shoppinglist.repository.ThreadPerTaskExecutor;
 import it.geronimo.shoppinglist.repository.dao.ShoppingListDao;
+import it.geronimo.shoppinglist.repository.dao.ShoppingListItemDao;
+import it.geronimo.shoppinglist.repository.entities.ShoppingList;
+import it.geronimo.shoppinglist.repository.entities.ShoppingListItem;
 import it.geronimo.shoppinglist.repository.entities.ShoppingListWithCalculatedValues;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
@@ -71,47 +74,53 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         String listSize = item.numberOfUnFlaggedItems + "/" + item.totalNumberOfItems;
         viewHolder.listSize.setText(listSize);
 
-        viewHolder.mainLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context, ItemActivity.class);
-                intent.putExtra(Extra.LIST_ID, item.id);
-                intent.putExtra(Extra.NAME, item.displayName);
-                context.startActivity(intent);
-            }
+        viewHolder.mainLayout.setOnClickListener(view -> {
+            Intent intent = new Intent(context, ItemActivity.class);
+            intent.putExtra(Extra.LIST_ID, item.id);
+            intent.putExtra(Extra.NAME, item.displayName);
+            context.startActivity(intent);
         });
 
-        viewHolder.buttonViewOption.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        viewHolder.buttonViewOption.setOnClickListener(view -> {
 
-                PopupMenu popupMenu = new PopupMenu(context, viewHolder.buttonViewOption);
-                popupMenu.inflate(R.menu.list_row_menu);
-                popupMenu.setOnMenuItemClickListener(menuItem -> {
-                    switch (menuItem.getItemId()) {
-                        case R.id.menu_item_rename:
-                            Intent intent = new Intent(context, ListEditActivity.class);
-                            intent.putExtra(Extra.CRUD, Crud.UPDATE);
-                            intent.putExtra(Extra.LIST_ID, item.id);
-                            intent.putExtra(Extra.NAME, item.displayName);
-                            context.startActivity(intent);
-                            return true;
-                        case R.id.menu_item_copy:
+            ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
+            ShoppingListDao daoList = db.shoppingListModel();
+            ShoppingListItemDao daoItems = db.shoppingListItemModel();
 
-                            return true;
-                        case R.id.menu_item_delete:
-                            ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
-                            ShoppingListDao dao = db.shoppingListModel();
-                            ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
-                            executor.execute(() -> dao.delete(item.id));
-                            return true;
-                        default:
-                            return false;
-                    }
-                });
+            ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
 
-                popupMenu.show();
-            }
+            PopupMenu popupMenu = new PopupMenu(context, viewHolder.buttonViewOption);
+            popupMenu.inflate(R.menu.list_row_menu);
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                int itemId = menuItem.getItemId();
+                if (itemId == R.id.menu_item_rename) {
+                    Intent intent = new Intent(context, ListEditActivity.class);
+                    intent.putExtra(Extra.CRUD, Crud.UPDATE);
+                    intent.putExtra(Extra.LIST_ID, item.id);
+                    intent.putExtra(Extra.NAME, item.displayName);
+                    context.startActivity(intent);
+                    return true;
+                }
+                else if (itemId == R.id.menu_item_copy) {
+                    ShoppingList newShoppingList = new ShoppingList();
+                    newShoppingList.displayName = item.displayName + " - Copy";
+                    executor.execute(() -> {
+                        newShoppingList.id = daoList.insert(newShoppingList);
+                        daoItems.copy(item.id, newShoppingList.id);
+                    });
+
+                    return true;
+                }
+                else if (itemId == R.id.menu_item_delete) {
+                    executor.execute(() -> daoList.delete(item.id));
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            });
+
+            popupMenu.show();
         });
     }
 

@@ -25,9 +25,13 @@ public interface ShoppingListItemDao {
     @Query("DELETE FROM shopping_list_item WHERE id = :id")
     void delete(long id);
 
-    @Update
-    void update(ShoppingListItem shoppingListItem);
+    @Query("UPDATE shopping_list_item SET displayName = :displayName, description = :description WHERE id = :id")
+    void update(long id, String displayName, String description);
 
     @Query("UPDATE shopping_list_item SET flagPurchased = :flagPurchased WHERE id= :id ")
     void update(long id, boolean flagPurchased);
+
+    @Query("INSERT INTO shopping_list_item(shoppingListId, displayName, description) " +
+           "SELECT :destinationId, displayName, description FROM shopping_list_item WHERE shoppingListId = :sourceId")
+    void copy(long sourceId, long destinationId);
 }

@@ -2,10 +2,14 @@ package it.geronimo.shoppinglist.activities.Item;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -89,29 +93,26 @@ public class ItemEditActivity extends AppCompatActivity {
     public void buttonClick(View view) {
 
         TextInputEditText nameTextView = findViewById(R.id.itemEditName);
-        String displayName = nameTextView.getText().toString();
-        if (displayName.trim().length() == 0) displayName = getString(R.string.new_item);
+        String _displayName = nameTextView.getText().toString();
+        if (_displayName.trim().length() == 0) _displayName = getString(R.string.new_item);
+        final String displayName = _displayName;
 
         TextInputEditText descriptionTextView = findViewById(R.id.itemEditDescription);
-        String description = descriptionTextView.getText().toString();
-
-        ShoppingListItem shoppingListItem = new ShoppingListItem();
-        shoppingListItem.displayName = displayName;
-        shoppingListItem.description = description;
-        shoppingListItem.shoppingListId = this.shoppingListId;
+        final String description = descriptionTextView.getText().toString();
 
         ShoppingListDb db = ShoppingListDb.getFileDatabase(this);
         ShoppingListItemDao dao = db.shoppingListItemModel();
 
         ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
         if (this.crudAction == Crud.CREATE) {
+            ShoppingListItem shoppingListItem = new ShoppingListItem();
+            shoppingListItem.displayName = displayName;
+            shoppingListItem.description = description;
+            shoppingListItem.shoppingListId = this.shoppingListId;
             executor.execute(() -> dao.insert(shoppingListItem));
         }
         else if (this.crudAction == Crud.UPDATE) {
-            executor.execute(() -> {
-                shoppingListItem.id = shoppingListItemId;
-                dao.update(shoppingListItem);
-            });
+            executor.execute(() -> dao.update(shoppingListItemId, displayName, description));
         }
 
         finish();
@@ -123,5 +124,32 @@ public class ItemEditActivity extends AppCompatActivity {
         outState.putLong(BUNDLE_LIST_ID, this.shoppingListId);
         outState.putLong(BUNDLE_ITEM_ID, this.shoppingListItemId);
         outState.putSerializable(BUNDLE_CRUD, this.crudAction);
+    }
+
+    public void photoButtonClick(View view) {
+        dispatchTakePictureIntent();
+    }
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            // TODO replace startActivityForResult
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (ActivityNotFoundException e) {
+            // display error state to the user
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        ImageView imageView = findViewById(R.id.imageView);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageView.setImageBitmap(imageBitmap);
+        }
     }
 }
