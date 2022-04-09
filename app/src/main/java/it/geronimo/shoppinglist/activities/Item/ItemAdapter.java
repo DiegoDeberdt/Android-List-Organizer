@@ -9,6 +9,7 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -32,8 +33,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView itemName;
+        private final TextView itemDescription;
         private final CheckBox itemCheckbox;
         private final LinearLayout mainLayout;
+        private final LinearLayout descriptionLayout;
 
         public ViewHolder(View view) {
             super(view);
@@ -41,8 +44,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             // Define click listener for the ViewHolder's View
 
             this.itemName = view.findViewById(R.id.item_name);
+            this.itemDescription = view.findViewById(R.id.item_description);
             this.itemCheckbox = view.findViewById(R.id.item_checkbox);
             this.mainLayout = view.findViewById(R.id.mainLayout);
+            this.descriptionLayout = view.findViewById(R.id.descriptionLayout);
         }
     }
 
@@ -60,7 +65,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     public ItemAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         // Create a new view, which defines the UI of the list item
         View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.item_row_item, viewGroup, false);
+                                  .inflate(R.layout.item_row_item, viewGroup, false);
 
         return new ItemAdapter.ViewHolder(view);
     }
@@ -74,37 +79,34 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
         ShoppingListItem item = localDataSet.get(position);
 
-        String itemName = item.displayName;
-        viewHolder.itemName.setText(itemName);
-
+        viewHolder.itemName.setText(item.displayName);
+        viewHolder.itemDescription.setText(item.description);
         viewHolder.itemCheckbox.setChecked(item.flagPurchased);
 
-        viewHolder.itemCheckbox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
-                        ShoppingListItemDao dao = db.shoppingListItemModel();
-                        dao.update(item.id, ((CheckBox)view).isChecked());
-                    }
-                });
-            }
+        viewHolder.itemCheckbox.setOnClickListener(view -> {
+            ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
+            executor.execute(() -> {
+                ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
+                ShoppingListItemDao dao = db.shoppingListItemModel();
+                dao.update(item.id, ((CheckBox)view).isChecked());
+            });
         });
 
-        viewHolder.itemName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context, ItemEditActivity.class);
-                intent.putExtra(Extra.CRUD, Crud.UPDATE);
-                intent.putExtra(Extra.LIST_ID, item.shoppingListId);
-                intent.putExtra(Extra.ITEM_ID, item.id);
-                intent.putExtra(Extra.NAME, item.displayName);
-                intent.putExtra(Extra.DESCRIPTION, item.description);
-                context.startActivity(intent);
+        viewHolder.itemName.setOnClickListener(view -> {
+            if (view == viewHolder.itemName) {
+                if (viewHolder.descriptionLayout.getVisibility() == View.GONE) {
+                    viewHolder.descriptionLayout.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.descriptionLayout.setVisibility(View.GONE);
+                }
             }
+//                Intent intent = new Intent(context, ItemEditActivity.class);
+//                intent.putExtra(Extra.CRUD, Crud.UPDATE);
+//                intent.putExtra(Extra.LIST_ID, item.shoppingListId);
+//                intent.putExtra(Extra.ITEM_ID, item.id);
+//                intent.putExtra(Extra.NAME, item.displayName);
+//                intent.putExtra(Extra.DESCRIPTION, item.description);
+//                context.startActivity(intent);
         });
     }
 
