@@ -22,8 +22,8 @@ public interface ShoppingListItemDao {
     @Insert
     long insert(ShoppingListItem shoppingListItem);
 
-    @Delete
-    void delete(ShoppingListItem shoppingListItem);
+    @Query("DELETE FROM shopping_list_item WHERE id = :id")
+    void delete(long id);
 
     @Update
     void update(ShoppingListItem shoppingListItem);

@@ -105,31 +105,23 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                 popup.inflate(R.menu.list_row_menu);
 
                 //adding click listener
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        switch (menuItem.getItemId()) {
-                            case R.id.menu_item_edit:
-                                Intent intent = new Intent(context, ListEditActivity.class);
-                                intent.putExtra(Extra.CRUD, Crud.UPDATE);
-                                intent.putExtra(Extra.LIST_ID, item.id);
-                                intent.putExtra(Extra.NAME, item.displayName);
-                                context.startActivity(intent);
-                                return true;
-                            case R.id.menu_item_delete:
-                                ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
-                                ShoppingListDao dao = db.shoppingListModel();
-                                ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
-                                executor.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        dao.delete(item.id);
-                                    }
-                                });
-                                return true;
-                            default:
-                                return false;
-                        }
+                popup.setOnMenuItemClickListener(menuItem -> {
+                    switch (menuItem.getItemId()) {
+                        case R.id.menu_item_edit:
+                            Intent intent = new Intent(context, ListEditActivity.class);
+                            intent.putExtra(Extra.CRUD, Crud.UPDATE);
+                            intent.putExtra(Extra.LIST_ID, item.id);
+                            intent.putExtra(Extra.NAME, item.displayName);
+                            context.startActivity(intent);
+                            return true;
+                        case R.id.menu_item_delete:
+                            ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
+                            ShoppingListDao dao = db.shoppingListModel();
+                            ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
+                            executor.execute(() -> dao.delete(item.id));
+                            return true;
+                        default:
+                            return false;
                     }
                 });
                 //displaying the popup

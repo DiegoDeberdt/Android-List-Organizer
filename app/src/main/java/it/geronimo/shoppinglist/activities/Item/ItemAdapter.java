@@ -3,6 +3,7 @@ package it.geronimo.shoppinglist.activities.Item;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -10,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -17,8 +19,10 @@ import java.util.List;
 import it.geronimo.shoppinglist.R;
 import it.geronimo.shoppinglist.activities.Crud;
 import it.geronimo.shoppinglist.activities.Extra;
+import it.geronimo.shoppinglist.activities.List.ListEditActivity;
 import it.geronimo.shoppinglist.repository.ShoppingListDb;
 import it.geronimo.shoppinglist.repository.ThreadPerTaskExecutor;
+import it.geronimo.shoppinglist.repository.dao.ShoppingListDao;
 import it.geronimo.shoppinglist.repository.dao.ShoppingListItemDao;
 import it.geronimo.shoppinglist.repository.entities.ShoppingListItem;
 
@@ -35,8 +39,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         private final TextView itemName;
         private final TextView itemDescription;
         private final CheckBox itemCheckbox;
-        private final LinearLayout mainLayout;
         private final LinearLayout descriptionLayout;
+        private final TextView buttonViewOption;
 
         public ViewHolder(View view) {
             super(view);
@@ -46,8 +50,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             this.itemName = view.findViewById(R.id.item_name);
             this.itemDescription = view.findViewById(R.id.item_description);
             this.itemCheckbox = view.findViewById(R.id.item_checkbox);
-            this.mainLayout = view.findViewById(R.id.mainLayout);
             this.descriptionLayout = view.findViewById(R.id.descriptionLayout);
+            this.buttonViewOption = view.findViewById(R.id.textViewOptions);
         }
     }
 
@@ -100,13 +104,43 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
                     viewHolder.descriptionLayout.setVisibility(View.GONE);
                 }
             }
-//                Intent intent = new Intent(context, ItemEditActivity.class);
-//                intent.putExtra(Extra.CRUD, Crud.UPDATE);
-//                intent.putExtra(Extra.LIST_ID, item.shoppingListId);
-//                intent.putExtra(Extra.ITEM_ID, item.id);
-//                intent.putExtra(Extra.NAME, item.displayName);
-//                intent.putExtra(Extra.DESCRIPTION, item.description);
-//                context.startActivity(intent);
+        });
+
+        viewHolder.buttonViewOption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //creating a popup menu
+                PopupMenu popup = new PopupMenu(context, viewHolder.buttonViewOption);
+
+                //inflating menu from xml resource
+                popup.inflate(R.menu.list_row_menu);
+
+                //adding click listener
+                popup.setOnMenuItemClickListener(menuItem -> {
+                    switch (menuItem.getItemId()) {
+                        case R.id.menu_item_edit:
+                            Intent intent = new Intent(context, ItemEditActivity.class);
+                            intent.putExtra(Extra.CRUD, Crud.UPDATE);
+                            intent.putExtra(Extra.LIST_ID, item.shoppingListId);
+                            intent.putExtra(Extra.ITEM_ID, item.id);
+                            intent.putExtra(Extra.NAME, item.displayName);
+                            intent.putExtra(Extra.DESCRIPTION, item.description);
+                            context.startActivity(intent);
+                            return true;
+                        case R.id.menu_item_delete:
+                            ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
+                            ShoppingListItemDao dao = db.shoppingListItemModel();
+                            ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
+                            executor.execute(() -> dao.delete(item.id));
+                            return true;
+                        default:
+                            return false;
+                    }
+                });
+                //displaying the popup
+                popup.show();
+            }
         });
     }
 
