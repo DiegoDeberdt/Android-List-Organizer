@@ -7,6 +7,15 @@
     android:background="@color/purple_200"
     tools:context=".activities.Item.ItemActivity">
 
+    <ImageView
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/todolist5"
+        android:id="@+id/im1"
+        android:scaleType="centerInside"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/itemsList"
         android:layout_width="match_parent"

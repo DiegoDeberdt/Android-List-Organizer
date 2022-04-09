@@ -7,6 +7,15 @@
     android:background="@color/purple_200"
     tools:context=".activities.List.ListEditActivity">
 
+    <ImageView
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/todolist4"
+        android:id="@+id/im1"
+        android:scaleType="centerInside"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"/>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/listEditLayout"
         android:layout_width="409dp"
@@ -21,15 +30,14 @@
             android:singleLine="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="List Name" />
+            android:hint="@string/list_name" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button android:onClick="buttonClick"
         android:id="@+id/listEditButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="N/A"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"

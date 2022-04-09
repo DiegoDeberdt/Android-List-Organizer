@@ -8,6 +8,8 @@
     tools:context=".activities.List.ListActivity">
 
     <ImageView
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/todolist"
         android:id="@+id/im1"
         android:scaleType="centerInside"
