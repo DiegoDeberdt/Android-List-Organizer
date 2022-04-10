@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Shopping List</string>
+    <string name="app_name">GoDo Task Lists</string>
     <string name="ellipsis">&#8942;</string>
     <string name="name">Name</string>
     <string name="description">Description</string>

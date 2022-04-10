@@ -36,7 +36,7 @@
         android:id="@+id/itemEditLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/itemEditLayout1">
@@ -47,13 +47,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/description"
-            android:minHeight="150dp" />
+            android:minHeight="100dp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:onClick="buttonClick"
         android:id="@+id/itemEditButton"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@id/photoButton"
@@ -64,11 +64,12 @@
         android:onClick="photoButtonClick"
         android:text="@string/add_picture"
         android:id="@+id/photoButton"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/itemEditButton"
         app:layout_constraintTop_toBottomOf="@+id/itemEditLayout2" />
 
     <ImageView

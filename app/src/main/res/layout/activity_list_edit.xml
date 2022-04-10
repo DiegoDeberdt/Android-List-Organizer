@@ -33,13 +33,20 @@
             android:hint="@string/list_name" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/imageList"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listEditLayout" />
+
     <Button android:onClick="buttonClick"
         android:id="@+id/listEditButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/listEditLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/imageList" />
 </androidx.constraintlayout.widget.ConstraintLayout>
