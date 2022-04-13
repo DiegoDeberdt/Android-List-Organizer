@@ -6,7 +6,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "it.geronimo.shoppinglist"
+        applicationId "lu.uni.student.shoppinglist"
         minSdk 24
         targetSdk 32
         versionCode 1

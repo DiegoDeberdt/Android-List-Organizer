@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -29,6 +30,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private final Context context;
     private final List<ShoppingListWithCalculatedValues> localDataSet;
+    private final int[] imageId;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -36,6 +38,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         private final TextView listSize;
         private final LinearLayout mainLayout;
         private final TextView buttonViewOption;
+        private final ImageView listImage;
 
         public ViewHolder(View view) {
             super(view);
@@ -44,12 +47,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             listSize = view.findViewById(R.id.list_size);
             mainLayout = view.findViewById(R.id.mainLayout);
             buttonViewOption = view.findViewById(R.id.textViewOptions);
+            listImage = view.findViewById(R.id.list_image);
         }
     }
 
-    public ListAdapter(Context context, List<ShoppingListWithCalculatedValues> dataSet) {
+    public ListAdapter(Context context, List<ShoppingListWithCalculatedValues> dataSet, int[] imageId) {
         this.context = context;
-        localDataSet = dataSet;
+        this.localDataSet = dataSet;
+        this.imageId = imageId;
     }
 
     @Override
@@ -68,6 +73,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
         String listName = item.displayName;
         viewHolder.listName.setText(listName);
+
+        viewHolder.listImage.setImageResource(imageId[item.imageId]);
 
         String listSize = item.numberOfUnFlaggedItems + "/" + item.totalNumberOfItems;
         viewHolder.listSize.setText(listSize);
@@ -96,6 +103,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                     intent.putExtra(Extra.CRUD, Crud.UPDATE);
                     intent.putExtra(Extra.LIST_ID, item.id);
                     intent.putExtra(Extra.NAME, item.displayName);
+                    intent.putExtra(Extra.IMAGE_INDEX, item.imageId);
                     context.startActivity(intent);
                     return true;
                 }

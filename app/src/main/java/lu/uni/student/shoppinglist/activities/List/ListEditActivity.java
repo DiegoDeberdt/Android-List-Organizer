@@ -1,6 +1,8 @@
 package lu.uni.student.shoppinglist.activities.List;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,8 +24,10 @@ public class ListEditActivity extends AppCompatActivity {
 
     // TODO: use a ViewModel
 
+    private int imageIndex;
     private Crud crudAction;
     private long shoppingListId;
+    private ListEditAdapter listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +35,37 @@ public class ListEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_edit);
 
         Intent intent = getIntent();
+
         if (!intent.hasExtra(Extra.CRUD)) throw new ExtrasNotFoundException(Extra.CRUD);
         this.crudAction = (Crud)intent.getSerializableExtra(Extra.CRUD);
 
         initTitleAndLabel(intent);
+
+        int[] imageIds = getImageIds();
+        if (this.crudAction == Crud.CREATE) {
+            this.listAdapter = new ListEditAdapter(this, imageIds);
+        }
+        else if (this.crudAction == Crud.UPDATE) {
+            if (!intent.hasExtra(Extra.IMAGE_INDEX)) throw new ExtrasNotFoundException(Extra.IMAGE_INDEX);
+            this.imageIndex = intent.getIntExtra(Extra.IMAGE_INDEX, 0);
+            this.listAdapter = new ListEditAdapter(this, imageIds, imageIndex);
+        }
+
+        RecyclerView imageList = findViewById(R.id.imageList);
+        imageList.setAdapter(listAdapter);
+
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 7);
+        imageList.setLayoutManager(layoutManager);
+    }
+
+    private int[] getImageIds() {
+        int[] images = new int[25];
+        for(int i=0; i<25; i++) {
+            String resourceIdentifier = "R.drawable.type" + i;
+            int imageId = getResources().getIdentifier("type" + i, "drawable", getPackageName());
+            images[i] = imageId;
+        }
+        return images;
     }
 
     private void initTitleAndLabel(Intent intent) {
@@ -65,6 +96,7 @@ public class ListEditActivity extends AppCompatActivity {
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.displayName = displayName;
         shoppingList.id = this.shoppingListId;
+        shoppingList.imageId = listAdapter.getSelectedImageResource();
 
         ShoppingListDb db = ShoppingListDb.getFileDatabase(getApplication());
         ShoppingListDao dao = db.shoppingListModel();

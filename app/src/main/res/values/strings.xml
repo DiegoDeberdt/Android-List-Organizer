@@ -4,11 +4,11 @@
     <string name="name">Name</string>
     <string name="description">Description</string>
     <string name="list_name">List Name</string>
-    <string name="rename">Rename</string>
+    <string name="rename">Edit</string>
     <string name="delete">Delete</string>
     <string name="copy">Copy</string>
     <string name="create_list">Create List</string>
-    <string name="rename_list">Rename List</string>
+    <string name="rename_list">Edit List</string>
     <string name="add_item">Add Item</string>
     <string name="update_item">Update Item</string>
     <string name="new_item">New Item</string>

@@ -14,6 +14,7 @@ import lu.uni.student.shoppinglist.repository.entities.*;
 public interface ShoppingListDao {
     @Query("SELECT id" +
             ", displayName" +
+            ", imageId" +
             ", (SELECT COUNT(*) FROM shopping_list_item WHERE shoppingListId = list.id) as totalNumberOfItems" +
             ", (SELECT COUNT(*) FROM shopping_list_item WHERE shoppingListId = list.id AND flagPurchased = 0) as numberOfUnFlaggedItems" +
             " FROM shopping_list list")

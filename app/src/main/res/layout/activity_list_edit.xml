@@ -10,8 +10,8 @@
     <ImageView
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/todolist4"
-        android:id="@+id/im1"
+        android:src="@drawable/background_image_4"
+        android:id="@+id/backgroundImage"
         android:scaleType="centerInside"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"/>
@@ -33,13 +33,17 @@
             android:hint="@string/list_name" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/imageList"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/imageListLayout"
+        android:layout_margin="2dp"
+        app:layout_constraintTop_toBottomOf="@+id/listEditLayout"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/listEditLayout" />
+        android:layout_height="wrap_content">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/imageList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.cardview.widget.CardView>
 
     <Button android:onClick="buttonClick"
         android:id="@+id/listEditButton"
@@ -48,5 +52,5 @@
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageList" />
+        app:layout_constraintTop_toBottomOf="@+id/imageListLayout" />
 </androidx.constraintlayout.widget.ConstraintLayout>

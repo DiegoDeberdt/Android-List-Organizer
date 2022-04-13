@@ -12,8 +12,6 @@ public class ShoppingList {
     @NonNull
     public String displayName;
 
-    @Override
-    public String toString() {
-        return displayName;
-    }
+    @NonNull
+    public int imageId;
 }

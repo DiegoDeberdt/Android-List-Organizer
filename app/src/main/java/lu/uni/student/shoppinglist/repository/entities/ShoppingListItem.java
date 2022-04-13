@@ -27,9 +27,4 @@ public class ShoppingListItem {
     @NonNull
     @ColumnInfo(defaultValue = "0")
     public boolean flagPurchased;
-
-    @Override
-    public String toString() {
-        return displayName;
-    }
 }
