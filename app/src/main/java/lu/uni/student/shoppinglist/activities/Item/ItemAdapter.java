@@ -109,8 +109,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
                             intent.putExtra(Extra.CRUD, Crud.UPDATE);
                             intent.putExtra(Extra.LIST_ID, item.shoppingListId);
                             intent.putExtra(Extra.ITEM_ID, item.id);
-                            intent.putExtra(Extra.NAME, item.displayName);
-                            intent.putExtra(Extra.DESCRIPTION, item.description);
                             context.startActivity(intent);
                             return true;
                         case R.id.menu_item_delete:

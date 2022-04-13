@@ -6,12 +6,17 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import lu.uni.student.shoppinglist.ExtrasNotFoundException;
 import lu.uni.student.shoppinglist.R;
@@ -64,15 +69,22 @@ public class ItemEditActivity extends AppCompatActivity {
             if (!intent.hasExtra(Extra.ITEM_ID)) throw new ExtrasNotFoundException(Extra.ITEM_ID);
             this.shoppingListItemId = intent.getLongExtra(Extra.ITEM_ID, -1);
 
-            if (!intent.hasExtra(Extra.NAME)) throw new ExtrasNotFoundException(Extra.NAME);
-            String name = intent.getStringExtra(Extra.NAME);
-            TextInputEditText nameInput = findViewById(R.id.itemEditName);
-            nameInput.setText(name);
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Handler handler = new Handler(Looper.getMainLooper());
 
-            if (!intent.hasExtra(Extra.DESCRIPTION)) throw new ExtrasNotFoundException(Extra.DESCRIPTION);
-            String description = intent.getStringExtra(Extra.DESCRIPTION);
-            TextInputEditText descriptionInput = findViewById(R.id.itemEditDescription);
-            descriptionInput.setText(description);
+            executor.execute(() -> {
+                ShoppingListDb db = ShoppingListDb.getFileDatabase(getApplication());
+                ShoppingListItemDao dao = db.shoppingListItemModel();
+                ShoppingListItem item = dao.getItemById(this.shoppingListItemId);
+
+                handler.post(() -> {
+                    TextInputEditText nameInput = findViewById(R.id.itemEditName);
+                    nameInput.setText(item.displayName);
+
+                    TextInputEditText descriptionInput = findViewById(R.id.itemEditDescription);
+                    descriptionInput.setText(item.description);
+                });
+            });
         }
     }
 

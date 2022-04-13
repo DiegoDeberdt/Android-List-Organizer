@@ -1,6 +1,5 @@
 package lu.uni.student.shoppinglist.activities.List;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +15,9 @@ import lu.uni.student.shoppinglist.R;
 
 public class ListEditAdapter extends RecyclerView.Adapter<ListEditAdapter.ViewHolder> {
 
-    private final Context context;
-    private final int[] localDataSet;
-    private int indexOfSelectedImage = 0;
-    private List<ImageView> allImageViews = new ArrayList<>();
+    private final int[] resourceIds;
+    private int indexOfSelectedIcon;
+    private final List<ImageView> allImageViews = new ArrayList<>();
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -31,20 +29,18 @@ public class ListEditAdapter extends RecyclerView.Adapter<ListEditAdapter.ViewHo
         }
     }
 
-    public ListEditAdapter(Context context, int[] dataset) {
-        this.context = context;
-        this.localDataSet = dataset;
-        this.indexOfSelectedImage = 0;
+    public ListEditAdapter(int[] resourceIds) {
+        this.resourceIds = resourceIds;
+        this.indexOfSelectedIcon = 0;
     }
 
-    public ListEditAdapter(Context context, int[] dataset, int indexOfSelectedImage) {
-        this.context = context;
-        this.localDataSet = dataset;
-        this.indexOfSelectedImage = indexOfSelectedImage;
+    public ListEditAdapter(int[] dataset, int indexOfSelectedIcon) {
+        this.resourceIds = dataset;
+        this.indexOfSelectedIcon = indexOfSelectedIcon;
     }
 
-    public int getSelectedImageResource() {
-        return indexOfSelectedImage;
+    public int getIndexOfSelectedIcon() {
+        return indexOfSelectedIcon;
     }
 
     @Override
@@ -61,20 +57,20 @@ public class ListEditAdapter extends RecyclerView.Adapter<ListEditAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int position) {
 
-        viewHolder.imageView.setImageResource(localDataSet[position]);
-        if (position == indexOfSelectedImage) {
+        viewHolder.imageView.setImageResource(resourceIds[position]);
+        if (position == indexOfSelectedIcon) {
             viewHolder.imageView.setBackgroundResource(R.color.purple_200);
         }
 
         viewHolder.imageView.setOnClickListener(view -> {
-            allImageViews.get(indexOfSelectedImage).setBackgroundResource(0);
+            allImageViews.get(indexOfSelectedIcon).setBackgroundResource(0);
             view.setBackgroundResource(R.color.purple_200);
-            indexOfSelectedImage = position;
+            indexOfSelectedIcon = viewHolder.getAdapterPosition();
         });
     }
 
     @Override
     public int getItemCount() {
-        return this.localDataSet.length;
+        return this.resourceIds.length;
     }
 }

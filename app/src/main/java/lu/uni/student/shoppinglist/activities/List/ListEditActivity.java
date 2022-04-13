@@ -22,9 +22,6 @@ import lu.uni.student.shoppinglist.repository.entities.ShoppingList;
 
 public class ListEditActivity extends AppCompatActivity {
 
-    // TODO: use a ViewModel
-
-    private int imageIndex;
     private Crud crudAction;
     private long shoppingListId;
     private ListEditAdapter listAdapter;
@@ -41,14 +38,15 @@ public class ListEditActivity extends AppCompatActivity {
 
         initTitleAndLabel(intent);
 
-        int[] imageIds = getImageIds();
+        int[] resourceIds = ListIcons.getResourceIds(getResources(), getPackageName());
+
         if (this.crudAction == Crud.CREATE) {
-            this.listAdapter = new ListEditAdapter(this, imageIds);
+            this.listAdapter = new ListEditAdapter(resourceIds);
         }
         else if (this.crudAction == Crud.UPDATE) {
             if (!intent.hasExtra(Extra.IMAGE_INDEX)) throw new ExtrasNotFoundException(Extra.IMAGE_INDEX);
-            this.imageIndex = intent.getIntExtra(Extra.IMAGE_INDEX, 0);
-            this.listAdapter = new ListEditAdapter(this, imageIds, imageIndex);
+            int imageIndex = intent.getIntExtra(Extra.IMAGE_INDEX, 0);
+            this.listAdapter = new ListEditAdapter(resourceIds, imageIndex);
         }
 
         RecyclerView imageList = findViewById(R.id.imageList);
@@ -56,16 +54,6 @@ public class ListEditActivity extends AppCompatActivity {
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 7);
         imageList.setLayoutManager(layoutManager);
-    }
-
-    private int[] getImageIds() {
-        int[] images = new int[25];
-        for(int i=0; i<25; i++) {
-            String resourceIdentifier = "R.drawable.type" + i;
-            int imageId = getResources().getIdentifier("type" + i, "drawable", getPackageName());
-            images[i] = imageId;
-        }
-        return images;
     }
 
     private void initTitleAndLabel(Intent intent) {
@@ -96,7 +84,8 @@ public class ListEditActivity extends AppCompatActivity {
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.displayName = displayName;
         shoppingList.id = this.shoppingListId;
-        shoppingList.imageId = listAdapter.getSelectedImageResource();
+        // TODO rename column 'imageId'
+        shoppingList.imageId = listAdapter.getIndexOfSelectedIcon();
 
         ShoppingListDb db = ShoppingListDb.getFileDatabase(getApplication());
         ShoppingListDao dao = db.shoppingListModel();

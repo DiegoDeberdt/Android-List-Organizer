@@ -28,7 +28,8 @@ public class ListActivity extends AppCompatActivity {
         ListActivityViewModel viewModel = new ViewModelProvider(this).get(ListActivityViewModel.class);
         viewModel.getShoppingListList().observe(this, allShoppingLists -> {
 
-            final ListAdapter adapter = new ListAdapter(context, allShoppingLists, getImageIds());
+            int[] imageId = ListIcons.getResourceIds(getResources(), getPackageName());
+            final ListAdapter adapter = new ListAdapter(context, allShoppingLists, imageId);
             shoppingListView.setAdapter(adapter);
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -41,15 +42,5 @@ public class ListActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ListEditActivity.class);
         intent.putExtra(Extra.CRUD, Crud.CREATE);
         startActivity(intent);
-    }
-
-    private int[] getImageIds() {
-        int[] images = new int[25];
-        for(int i=0; i<25; i++) {
-            String resourceIdentifier = "R.drawable.type" + i;
-            int imageId = getResources().getIdentifier("type" + i, "drawable", getPackageName());
-            images[i] = imageId;
-        }
-        return images;
     }
 }
