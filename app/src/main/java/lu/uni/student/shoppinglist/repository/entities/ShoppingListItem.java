@@ -8,10 +8,9 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName="shopping_list_item",
         foreignKeys = {@ForeignKey(entity = ShoppingList.class,
-                parentColumns = "id",
-                childColumns = "shoppingListId",
-                onDelete = ForeignKey.CASCADE)
-        })
+                                   parentColumns = "id",
+                                   childColumns = "shoppingListId",
+                                   onDelete = ForeignKey.CASCADE) })
 public class ShoppingListItem {
     @PrimaryKey(autoGenerate = true)
     public long id;

@@ -28,8 +28,8 @@ public class ListActivity extends AppCompatActivity {
         ListActivityViewModel viewModel = new ViewModelProvider(this).get(ListActivityViewModel.class);
         viewModel.getShoppingListList().observe(this, allShoppingLists -> {
 
-            int[] imageId = ListIcons.getResourceIds(getResources(), getPackageName());
-            final ListAdapter adapter = new ListAdapter(context, allShoppingLists, imageId);
+            int[] iconResourceIds = ListIcons.getResourceIds(getResources(), getPackageName());
+            final ListAdapter adapter = new ListAdapter(context, allShoppingLists, iconResourceIds);
             shoppingListView.setAdapter(adapter);
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(this);

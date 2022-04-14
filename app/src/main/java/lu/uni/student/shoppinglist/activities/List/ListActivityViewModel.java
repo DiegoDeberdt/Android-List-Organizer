@@ -23,7 +23,7 @@ public class ListActivityViewModel extends AndroidViewModel {
         if (this.shoppingListList == null) {
             ShoppingListDb db = ShoppingListDb.getFileDatabase(getApplication());
             ShoppingListDao dao = db.shoppingListModel();
-            this.shoppingListList = dao.loadAll();
+            this.shoppingListList = dao.loadAllTopLevelLists();
         }
         return this.shoppingListList;
     }

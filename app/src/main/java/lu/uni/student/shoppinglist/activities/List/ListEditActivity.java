@@ -38,15 +38,15 @@ public class ListEditActivity extends AppCompatActivity {
 
         initTitleAndLabel(intent);
 
-        int[] resourceIds = ListIcons.getResourceIds(getResources(), getPackageName());
+        int[] iconResourceIds = ListIcons.getResourceIds(getResources(), getPackageName());
 
         if (this.crudAction == Crud.CREATE) {
-            this.listAdapter = new ListEditAdapter(resourceIds);
+            this.listAdapter = new ListEditAdapter(iconResourceIds);
         }
         else if (this.crudAction == Crud.UPDATE) {
             if (!intent.hasExtra(Extra.IMAGE_INDEX)) throw new ExtrasNotFoundException(Extra.IMAGE_INDEX);
             int imageIndex = intent.getIntExtra(Extra.IMAGE_INDEX, 0);
-            this.listAdapter = new ListEditAdapter(resourceIds, imageIndex);
+            this.listAdapter = new ListEditAdapter(iconResourceIds, imageIndex);
         }
 
         RecyclerView imageList = findViewById(R.id.imageList);
@@ -85,7 +85,7 @@ public class ListEditActivity extends AppCompatActivity {
         shoppingList.displayName = displayName;
         shoppingList.id = this.shoppingListId;
         // TODO rename column 'imageId'
-        shoppingList.imageId = listAdapter.getIndexOfSelectedIcon();
+        shoppingList.iconIndex = listAdapter.getIndexOfSelectedIcon();
 
         ShoppingListDb db = ShoppingListDb.getFileDatabase(getApplication());
         ShoppingListDao dao = db.shoppingListModel();

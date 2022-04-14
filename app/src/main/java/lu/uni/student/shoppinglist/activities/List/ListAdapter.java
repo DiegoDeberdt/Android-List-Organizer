@@ -74,7 +74,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         String listName = item.displayName;
         viewHolder.listName.setText(listName);
 
-        viewHolder.listImage.setImageResource(imageId[item.imageId]);
+        viewHolder.listImage.setImageResource(imageId[item.iconIndex]);
 
         String listSize = item.numberOfUnFlaggedItems + "/" + item.totalNumberOfItems;
         viewHolder.listSize.setText(listSize);
@@ -103,7 +103,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                     intent.putExtra(Extra.CRUD, Crud.UPDATE);
                     intent.putExtra(Extra.LIST_ID, item.id);
                     intent.putExtra(Extra.NAME, item.displayName);
-                    intent.putExtra(Extra.IMAGE_INDEX, item.imageId);
+                    intent.putExtra(Extra.IMAGE_INDEX, item.iconIndex);
                     context.startActivity(intent);
                     return true;
                 }
