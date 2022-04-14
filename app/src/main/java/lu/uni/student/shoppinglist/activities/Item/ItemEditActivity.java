@@ -96,7 +96,7 @@ public class ItemEditActivity extends AppCompatActivity {
                 setTitle(R.string.add_list_item);
                 break;
             case UPDATE:
-                button.setText(R.string.update_item);
+                button.setText(R.string.save_changes);
                 setTitle(R.string.edit_list_item);
                 break;
         }

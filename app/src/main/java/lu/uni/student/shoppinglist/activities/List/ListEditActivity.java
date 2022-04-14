@@ -66,7 +66,7 @@ public class ListEditActivity extends AppCompatActivity {
                 setTitle(R.string.new_list);
                 break;
             case UPDATE:
-                button.setText(R.string.rename_list);
+                button.setText(R.string.save_changes);
                 setTitle(R.string.rename_list);
 
                 if (!intent.hasExtra(Extra.LIST_ID)) throw new ExtrasNotFoundException(Extra.LIST_ID);
