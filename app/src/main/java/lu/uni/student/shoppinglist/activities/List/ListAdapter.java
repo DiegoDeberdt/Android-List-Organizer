@@ -110,6 +110,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                 else if (itemId == R.id.menu_item_copy) {
                     ShoppingList newShoppingList = new ShoppingList();
                     newShoppingList.displayName = item.displayName + " - Copy";
+                    newShoppingList.iconIndex = item.iconIndex;
+                    newShoppingList.parentId = item.parentId;
                     executor.execute(() -> {
                         newShoppingList.id = daoList.insert(newShoppingList);
                         daoItems.copy(item.id, newShoppingList.id);

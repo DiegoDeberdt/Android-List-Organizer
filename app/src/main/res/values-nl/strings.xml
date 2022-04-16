@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">GoDo List Manager</string>
+    <string name="item_name">Naam</string>
+    <string name="item_description">Beschrijving</string>
+    <string name="List_Name">Naam Lijst</string>
+    <string name="list_row_menu_item_rename">Bewerken</string>
+    <string name="list_row_menu_item_delete">Verwijderen</string>
+    <string name="list_row_menu_item_copy">Copieren</string>
+    <string name="list_create_button">Lijst Aanmaken</string>
+    <string name="list_edit_action_title">Lijst Wijzigen</string>
+    <string name="item_add_button">Item Toevoegen</string>
+    <string name="item_update">Item Bijwerken</string>
+    <string name="save_changes_button">Wijzigingen Bewaren</string>
+    <string name="item_new">Nieuw Item</string>
+    <string name="list_create_action_title">Nieuwe Lijst</string>
+    <string name="item_row_menu_item_edit">Wijzigen</string>
+    <string name="item_edit_action_title">Item Bewerken</string>
+    <string name="item_add_action_title">Item Toevoegen</string>
+    <string name="list_edit">Lijst Bewerken</string>
+    <string name="list_items">Lijst Items</string>
+    <string name="item_add_picture_button">Afbeelding Toevoegen</string>
+    <string name="list_name">Naam Lijst</string>
+    <string name="rename">Bewerken</string>
+    <string name="delete">Verwijderen</string>
+    <string name="copy">Copieren</string>
+    <string name="create_list">Lijst Aanmaken</string>
+    <string name="rename_list">Lijst Bewerken</string>
+    <string name="add_item">Item Toevoegen</string>
+    <string name="save_changes">Wijzigingen Bewaren</string>
+    <string name="new_list">Nieuwe Lijst</string>
+    <string name="edit">Bewerken</string>
+    <string name="edit_list_item">Item Bewerken</string>
+    <string name="add_list_item">Item Toevoegen</string>
+    <string name="item_row_menu_item_delete">Item Verwijderen</string>
+</resources>

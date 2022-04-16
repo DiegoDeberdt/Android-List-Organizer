@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_item_edit"
         android:icon="@android:drawable/ic_dialog_map"
-        android:title="@string/edit" />
+        android:title="@string/item_row_menu_item_edit" />
     <item android:id="@+id/menu_item_delete"
         android:icon="@android:drawable/ic_dialog_info"
-        android:title="@string/delete" />
+        android:title="@string/item_row_menu_item_delete" />
 </menu>

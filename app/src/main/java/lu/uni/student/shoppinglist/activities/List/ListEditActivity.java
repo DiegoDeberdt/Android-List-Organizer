@@ -62,12 +62,12 @@ public class ListEditActivity extends AppCompatActivity {
 
         switch(this.crudAction) {
             case CREATE:
-                button.setText(R.string.create_list);
-                setTitle(R.string.new_list);
+                button.setText(R.string.list_create_button);
+                setTitle(R.string.list_create_action_title);
                 break;
             case UPDATE:
-                button.setText(R.string.save_changes);
-                setTitle(R.string.rename_list);
+                button.setText(R.string.save_changes_button);
+                setTitle(R.string.list_edit_action_title);
 
                 if (!intent.hasExtra(Extra.LIST_ID)) throw new ExtrasNotFoundException(Extra.LIST_ID);
                 this.shoppingListId = intent.getLongExtra(Extra.LIST_ID, -1);
@@ -79,7 +79,7 @@ public class ListEditActivity extends AppCompatActivity {
     public void buttonClick(View view) {
         TextInputEditText textView = findViewById(R.id.listEditName);
         String displayName = textView.getText().toString();
-        if (displayName.trim().length() == 0) displayName = getString(R.string.new_list);
+        if (displayName.trim().length() == 0) displayName = getString(R.string.list_create_action_title);
 
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.displayName = displayName;

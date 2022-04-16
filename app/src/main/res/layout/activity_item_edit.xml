@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -20,7 +21,7 @@
             android:singleLine="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/name" />
+            android:hint="@string/item_name" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -37,7 +38,7 @@
             android:id="@+id/itemEditDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/description"
+            android:hint="@string/item_description"
             android:minHeight="100dp" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -53,7 +54,7 @@
 
     <Button
         android:onClick="photoButtonClick"
-        android:text="@string/add_picture"
+        android:text="@string/item_add_picture_button"
         android:id="@+id/photoButton"
         android:layout_marginStart="15dp"
         android:layout_marginTop="10dp"

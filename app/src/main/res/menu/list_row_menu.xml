@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_item_rename"
         android:icon="@android:drawable/ic_dialog_map"
-        android:title="@string/rename" />
+        android:title="@string/list_row_menu_item_rename" />
     <item android:id="@+id/menu_item_copy"
         android:icon="@android:drawable/ic_dialog_map"
-        android:title="@string/copy" />
+        android:title="@string/list_row_menu_item_copy" />
     <item android:id="@+id/menu_item_delete"
         android:icon="@android:drawable/ic_dialog_info"
-        android:title="@string/delete" />
+        android:title="@string/list_row_menu_item_delete" />
 </menu>

@@ -16,6 +16,8 @@ import lu.uni.student.shoppinglist.ExtrasNotFoundException;
 import lu.uni.student.shoppinglist.R;
 import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
+import lu.uni.student.shoppinglist.activities.List.ListAdapter;
+import lu.uni.student.shoppinglist.activities.List.ListIcons;
 
 public class ItemActivity extends AppCompatActivity {
 
@@ -34,7 +36,6 @@ public class ItemActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) this.shoppingListId = savedInstanceState.getLong(BUNDLE_ID);
         else this.shoppingListId = intent.getLongExtra(Extra.LIST_ID, -1);
-
         if (this.shoppingListId == -1) throw new ExtrasNotFoundException(Extra.LIST_ID);
 
         setTitle(intent.getStringExtra(Extra.NAME));
@@ -49,6 +50,19 @@ public class ItemActivity extends AppCompatActivity {
                 LinearLayoutManager layoutManager = new LinearLayoutManager(this);
                 layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                 itemListView.setLayoutManager(layoutManager);
+            }
+        });
+
+        viewModel.getShoppingLists(shoppingListId).observe(this, shoppingLists ->{
+            RecyclerView listView = findViewById(R.id.subLists);
+            if (listView != null) {
+                int[] iconResourceIds = ListIcons.getResourceIds(getResources(), getPackageName());
+                final ListAdapter adapter = new ListAdapter(context, shoppingLists, iconResourceIds);
+                listView.setAdapter(adapter);
+
+                LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+                layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                listView.setLayoutManager(layoutManager);
             }
         });
     }

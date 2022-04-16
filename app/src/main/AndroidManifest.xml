@@ -16,12 +16,12 @@
         android:theme="@style/Theme.ShoppingList">
 
         <activity
-            android:label="@string/edit_list_item"
+            android:label="@string/item_edit_action_title"
             android:name=".activities.Item.ItemEditActivity"
             android:exported="false" />
 
         <activity
-            android:label="@string/edit_list"
+            android:label="@string/list_edit"
             android:name=".activities.List.ListEditActivity"
             android:exported="false" />
 

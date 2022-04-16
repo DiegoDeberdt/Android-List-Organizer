@@ -92,12 +92,12 @@ public class ItemEditActivity extends AppCompatActivity {
         Button button = findViewById(R.id.itemEditButton);
         switch(this.crudAction) {
             case CREATE:
-                button.setText(R.string.add_item);
-                setTitle(R.string.add_list_item);
+                button.setText(R.string.item_add_button);
+                setTitle(R.string.item_add_action_title);
                 break;
             case UPDATE:
-                button.setText(R.string.save_changes);
-                setTitle(R.string.edit_list_item);
+                button.setText(R.string.save_changes_button);
+                setTitle(R.string.item_edit_action_title);
                 break;
         }
     }
@@ -106,7 +106,7 @@ public class ItemEditActivity extends AppCompatActivity {
 
         TextInputEditText nameTextView = findViewById(R.id.itemEditName);
         String _displayName = nameTextView.getText().toString();
-        if (_displayName.trim().length() == 0) _displayName = getString(R.string.new_item);
+        if (_displayName.trim().length() == 0) _displayName = getString(R.string.item_new);
         final String displayName = _displayName;
 
         TextInputEditText descriptionTextView = findViewById(R.id.itemEditDescription);

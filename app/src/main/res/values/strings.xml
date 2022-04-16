@@ -1,23 +1,27 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">GoDo List Manager</string>
-    <string name="ellipsis">&#8942;</string>
-    <string name="name">Name</string>
-    <string name="description">Description</string>
-    <string name="list_name">List Name</string>
-    <string name="rename">Edit</string>
-    <string name="delete">Delete</string>
-    <string name="copy">Copy</string>
-    <string name="create_list">Create List</string>
-    <string name="rename_list">Edit List</string>
-    <string name="add_item">Add Item</string>
-    <string name="update_item">Update Item</string>
-    <string name="save_changes">Save Changes</string>
-    <string name="new_item">New Item</string>
-    <string name="new_list">New List</string>
-    <string name="edit">Edit</string>
-    <string name="edit_list_item">Edit Item</string>
-    <string name="add_list_item">Add Item</string>
-    <string name="edit_list">Edit List</string>
+    <string name="ellipsis" translatable="false">&#8942;</string>
+    <string name="save_changes_button">Save Changes</string>
+
+    <string name="item_name">Name</string>
+    <string name="item_description">Description</string>
+    <string name="item_add_button">Add Item</string>
+    <string name="item_update">Update Item</string>
+    <string name="item_new">New Item</string>
+    <string name="item_row_menu_item_edit">Edit</string>
+    <string name="item_row_menu_item_delete">Delete</string>
+    <string name="item_edit_action_title">Edit Item</string>
+    <string name="item_add_action_title">Add Item</string>
+    <string name="item_add_picture_button">Add Picture</string>
+
+    <string name="List_Name">List Name</string>
+    <string name="list_row_menu_item_rename">Edit</string>
+    <string name="list_row_menu_item_delete">Delete</string>
+    <string name="list_row_menu_item_copy">Copy</string>
+    <string name="list_create_button">Create List</string>
+    <string name="list_edit_action_title">Edit List</string>
+    <string name="list_create_action_title">New List</string>
+    <string name="list_edit">Edit List</string>
     <string name="list_items">List Items</string>
-    <string name="add_picture">Add Picture</string>
 </resources>
