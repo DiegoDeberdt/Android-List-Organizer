@@ -64,9 +64,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ItemAdapter.ViewHolder viewHolder, final int position) {
 
-        // Get element from your dataset at this position and replace the
-        // contents of the view with that element
-
         ShoppingListItem item = localDataSet.get(position);
 
         viewHolder.itemName.setText(item.displayName);
@@ -74,6 +71,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         viewHolder.itemCheckbox.setChecked(item.flagPurchased);
 
         viewHolder.itemCheckbox.setOnClickListener(view -> {
+
+            // Handle the user clicking on the checkbox
+
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
                 ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
@@ -83,6 +83,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         });
 
         viewHolder.itemName.setOnClickListener(view -> {
+
+            // Expand and collapse the item "description"
+
             if (view == viewHolder.itemName) {
                 if (viewHolder.descriptionLayout.getVisibility() == View.GONE) {
                     viewHolder.descriptionLayout.setVisibility(View.VISIBLE);
@@ -96,33 +99,21 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             @Override
             public void onClick(View view) {
 
-                //creating a popup menu
                 PopupMenu popup = new PopupMenu(context, viewHolder.buttonViewOption);
-
-                //inflating menu from xml resource
                 popup.inflate(R.menu.item_row_menu);
-
-                //adding click listener
                 popup.setOnMenuItemClickListener(menuItem -> {
                     switch (menuItem.getItemId()) {
                         case R.id.menu_item_edit:
-                            Intent intent = new Intent(context, ItemEditActivity.class);
-                            intent.putExtra(Extra.CRUD, Crud.UPDATE);
-                            intent.putExtra(Extra.LIST_ID, item.shoppingListId);
-                            intent.putExtra(Extra.ITEM_ID, item.id);
-                            context.startActivity(intent);
+                            onMenuItemEditClicked(item);
                             return true;
                         case R.id.menu_item_delete:
-                            ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
-                            ShoppingListItemDao dao = db.shoppingListItemModel();
-                            ExecutorService executor = Executors.newSingleThreadExecutor();
-                            executor.execute(() -> dao.delete(item.id));
+                            onMenuItemDeleteClicked(item.id);
                             return true;
                         default:
                             return false;
                     }
                 });
-                //displaying the popup
+
                 popup.show();
             }
         });
@@ -132,5 +123,20 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return localDataSet.size();
+    }
+
+    private void onMenuItemDeleteClicked(long id) {
+        ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
+        ShoppingListItemDao dao = db.shoppingListItemModel();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> dao.delete(id));
+    }
+
+    private void onMenuItemEditClicked(ShoppingListItem item) {
+        Intent intent = new Intent(context, ItemEditActivity.class);
+        intent.putExtra(Extra.CRUD, Crud.UPDATE);
+        intent.putExtra(Extra.LIST_ID, item.shoppingListId);
+        intent.putExtra(Extra.ITEM_ID, item.id);
+        context.startActivity(intent);
     }
 }

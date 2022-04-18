@@ -24,10 +24,6 @@ import lu.uni.student.shoppinglist.repository.entities.ShoppingListItem;
 
 public class ItemEditActivity extends AppCompatActivity {
 
-    private final String BUNDLE_CRUD = "Crud";
-    private final String BUNDLE_LIST_ID = "shoppingListId";
-    private final String BUNDLE_ITEM_ID = "shoppingListItemId";
-
     private Crud crudAction;
     private long shoppingListId;
     private long shoppingListItemId;
@@ -37,18 +33,8 @@ public class ItemEditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_edit);
 
-        // TODO: check if I need to save instance data. Processing the intent is probably enough.
-//        if (savedInstanceState != null) processInstanceState(savedInstanceState);
-//        else processIntent();
-
         processIntent();
         initTitleAndLabel();
-    }
-
-    private void processInstanceState(Bundle savedInstanceState) {
-        this.crudAction = (Crud)savedInstanceState.getSerializable(BUNDLE_CRUD);
-        this.shoppingListId = savedInstanceState.getLong(BUNDLE_LIST_ID);
-        this.shoppingListItemId = savedInstanceState.getLong(BUNDLE_ITEM_ID);
     }
 
     private void processIntent() {
@@ -68,11 +54,17 @@ public class ItemEditActivity extends AppCompatActivity {
             Handler handler = new Handler(Looper.getMainLooper());
 
             executor.execute(() -> {
+
+                // Query the database
+
                 ShoppingListDb db = ShoppingListDb.getFileDatabase(getApplication());
                 ShoppingListItemDao dao = db.shoppingListItemModel();
                 ShoppingListItem item = dao.getItemById(this.shoppingListItemId);
 
                 handler.post(() -> {
+
+                    // Update the UI
+
                     TextInputEditText nameInput = findViewById(R.id.itemEditName);
                     nameInput.setText(item.displayName);
 
@@ -83,6 +75,10 @@ public class ItemEditActivity extends AppCompatActivity {
         }
     }
 
+    /*
+     * Update the activity title.
+     * Also set the label that is shown on the button.
+     */
     private void initTitleAndLabel() {
         Button button = findViewById(R.id.itemEditButton);
         switch(this.crudAction) {
@@ -97,12 +93,14 @@ public class ItemEditActivity extends AppCompatActivity {
         }
     }
 
+    /*
+     * Click handler for the button.
+     */
     public void buttonClick(View view) {
 
         TextInputEditText nameTextView = findViewById(R.id.itemEditName);
-        String _displayName = nameTextView.getText().toString();
-        if (_displayName.trim().length() == 0) _displayName = getString(R.string.item_new);
-        final String displayName = _displayName;
+        String displayName = nameTextView.getText().toString();
+        if (displayName.trim().length() == 0) displayName = getString(R.string.item_new);
 
         TextInputEditText descriptionTextView = findViewById(R.id.itemEditDescription);
         final String description = descriptionTextView.getText().toString();
@@ -110,26 +108,30 @@ public class ItemEditActivity extends AppCompatActivity {
         ShoppingListDb db = ShoppingListDb.getFileDatabase(this);
         ShoppingListItemDao dao = db.shoppingListItemModel();
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
         if (this.crudAction == Crud.CREATE) {
-            ShoppingListItem shoppingListItem = new ShoppingListItem();
-            shoppingListItem.displayName = displayName;
-            shoppingListItem.description = description;
-            shoppingListItem.shoppingListId = this.shoppingListId;
-            executor.execute(() -> dao.insert(shoppingListItem));
+
+            createNewListItem(displayName, description, dao);
         }
         else if (this.crudAction == Crud.UPDATE) {
-            executor.execute(() -> dao.update(shoppingListItemId, displayName, description));
+
+            updateListItem(displayName, description, dao);
         }
 
         finish();
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong(BUNDLE_LIST_ID, this.shoppingListId);
-        outState.putLong(BUNDLE_ITEM_ID, this.shoppingListItemId);
-        outState.putSerializable(BUNDLE_CRUD, this.crudAction);
+    private void updateListItem(final String displayName, final String description, final ShoppingListItemDao dao) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> dao.update(this.shoppingListItemId, displayName, description));
+    }
+
+    private void createNewListItem(final String displayName, final String description, final ShoppingListItemDao dao) {
+        ShoppingListItem shoppingListItem = new ShoppingListItem();
+        shoppingListItem.displayName = displayName;
+        shoppingListItem.description = description;
+        shoppingListItem.shoppingListId = this.shoppingListId;
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> dao.insert(shoppingListItem));
     }
 }
