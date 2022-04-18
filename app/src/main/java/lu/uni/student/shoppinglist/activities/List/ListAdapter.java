@@ -103,33 +103,21 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
                     // Edit an existing list
 
-                    Intent intent = new Intent(context, ListEditActivity.class);
-                    intent.putExtra(Extra.CRUD, Crud.UPDATE);
-                    intent.putExtra(Extra.LIST_ID, item.id);
-                    intent.putExtra(Extra.NAME, item.displayName);
-                    intent.putExtra(Extra.IMAGE_INDEX, item.iconIndex);
-                    intent.putExtra(Extra.PARENT_ID, item.parentId);
-                    if (item.parentId != null) {
-                        Bundle bundle = new Bundle();
-                        bundle.putLong(Extra.PARENT_ID, item.parentId);
-                        intent.putExtra(Extra.PARENT_ID, bundle);
-                    }
-
-                    context.startActivity(intent);
+                    editList(item);
                     return true;
                 }
                 else if (itemId == R.id.menu_item_copy) {
 
                     // Copy an existing list (recursively)
 
-                    copyListRecursively(daoList, daoItems, item, item.parentId, true);
+                    copyList(daoList, daoItems, item, item.parentId, true);
                     return true;
                 }
                 else if (itemId == R.id.menu_item_delete) {
 
                     // Delete a list (recursively)
 
-                    deleteListRecursively(daoList, item.id);
+                    deleteList(daoList, item.id);
                     return true;
                 }
                 else {
@@ -146,42 +134,61 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         return localDataSet.size();
     }
 
-    private void deleteListRecursively(ShoppingListDao daoList, long id) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
+    private void editList(ShoppingList item) {
+        Intent intent = new Intent(context, ListEditActivity.class);
+        intent.putExtra(Extra.CRUD, Crud.UPDATE);
+        intent.putExtra(Extra.LIST_ID, item.id);
+        intent.putExtra(Extra.NAME, item.displayName);
+        intent.putExtra(Extra.IMAGE_INDEX, item.iconIndex);
+        intent.putExtra(Extra.PARENT_ID, item.parentId);
+        if (item.parentId != null) {
+            Bundle bundle = new Bundle();
+            bundle.putLong(Extra.PARENT_ID, item.parentId);
+            intent.putExtra(Extra.PARENT_ID, bundle);
+        }
 
+        context.startActivity(intent);
+    }
+
+    private void deleteList(ShoppingListDao daoList, long id) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-            List<ShoppingList> childLists = daoList.getListsToCopy(id);
-            if (childLists.size() == 0) {
-                daoList.delete(id);
+            deleteListRecursively(daoList, id);
+        });
+    }
+
+    private void deleteListRecursively(ShoppingListDao daoList, long id) {
+        List<ShoppingList> childLists = daoList.getListsToCopy(id);
+        if (childLists.size() != 0) {
+            for (ShoppingList listItem : childLists) {
+                deleteListRecursively(daoList, listItem.id);
+                daoList.delete(listItem.id);
             }
-            else {
-                for(ShoppingList listItem : childLists) {
-                    deleteListRecursively(daoList, listItem.id);
-                    daoList.delete(listItem.id);
-                }
-                daoList.delete(id);
-            }
+        }
+        daoList.delete(id);
+    }
+
+    private void copyList(ShoppingListDao daoList, ShoppingListItemDao daoItems, ShoppingList item, Long parentId, boolean modifyListName) {
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            copyListRecursively(daoList, daoItems, item, parentId, modifyListName);
         });
     }
 
     private void copyListRecursively(ShoppingListDao daoList, ShoppingListItemDao daoItems, ShoppingList item, Long parentId, boolean modifyListName) {
+        ShoppingList newShoppingList = new ShoppingList();
+        newShoppingList.iconIndex = item.iconIndex;
+        newShoppingList.parentId = parentId;
+        newShoppingList.displayName = item.displayName;
+        if (modifyListName) newShoppingList.displayName += " - Copy"; // TODO move to string resource
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
+        newShoppingList.id = daoList.insert(newShoppingList);
+        daoItems.copy(item.id, newShoppingList.id);
 
-        executor.execute(() -> {
-            ShoppingList newShoppingList = new ShoppingList();
-            newShoppingList.iconIndex = item.iconIndex;
-            newShoppingList.parentId = parentId;
-            newShoppingList.displayName = item.displayName;
-            if (modifyListName) newShoppingList.displayName += " - Copy";
-
-            newShoppingList.id = daoList.insert(newShoppingList);
-            daoItems.copy(item.id, newShoppingList.id);
-
-            List<ShoppingList> childLists = daoList.getListsToCopy(item.id);
-            for(ShoppingList listItem : childLists) {
-                copyListRecursively(daoList, daoItems, listItem, newShoppingList.id, false);
-            }
-        });
+        List<ShoppingList> childLists = daoList.getListsToCopy(item.id);
+        for(ShoppingList listItem : childLists) {
+            copyListRecursively(daoList, daoItems, listItem, newShoppingList.id, false);
+        }
     }
 }

@@ -12,6 +12,7 @@ import lu.uni.student.shoppinglist.repository.dao.*;
 import lu.uni.student.shoppinglist.repository.entities.*;
 
 public class ItemActivityViewModel extends AndroidViewModel {
+
     private LiveData<List<ShoppingListItem>> shoppingListItemList;
     private LiveData<List<ShoppingListWithCalculatedValues>> shoppingLists;
 

@@ -32,4 +32,7 @@ public interface ShoppingListItemDao {
     @Query("INSERT INTO shopping_list_item(shoppingListId, displayName, description) " +
            "SELECT :destinationId, displayName, description FROM shopping_list_item WHERE shoppingListId = :sourceId")
     void copy(long sourceId, long destinationId);
+
+    @Query("UPDATE shopping_list_item SET flagPurchased = 0 WHERE shoppingListId = :listId")
+    void resetAllItemsInList(long listId);
 }

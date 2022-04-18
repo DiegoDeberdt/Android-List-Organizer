@@ -8,10 +8,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import lu.uni.student.shoppinglist.ExtrasNotFoundException;
 import lu.uni.student.shoppinglist.R;
@@ -20,6 +24,9 @@ import lu.uni.student.shoppinglist.activities.Extra;
 import lu.uni.student.shoppinglist.activities.List.ListAdapter;
 import lu.uni.student.shoppinglist.activities.List.ListEditActivity;
 import lu.uni.student.shoppinglist.activities.List.ListIcons;
+import lu.uni.student.shoppinglist.repository.ShoppingListDb;
+import lu.uni.student.shoppinglist.repository.dao.ShoppingListDao;
+import lu.uni.student.shoppinglist.repository.dao.ShoppingListItemDao;
 
 public class ItemActivity extends AppCompatActivity {
 
@@ -85,23 +92,37 @@ public class ItemActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.item_menu, menu);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
+        super.onOptionsItemSelected(item);
+
         switch (item.getItemId()) {
             case R.id.option_create_list:
                 createNewList();
                 return true;
-            case R.id.option_hide_finished_items:
+            case R.id.option_reset_finished_items:
+                resetAllItemsInList();
                 return true;
             default:
-                return super.onOptionsItemSelected(item);
+                throw new RuntimeException("Unhandled option");
         }
+    }
+
+    private void resetAllItemsInList() {
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            ShoppingListDb db = ShoppingListDb.getFileDatabase(this);
+            ShoppingListItemDao daoItems = db.shoppingListItemModel();
+            daoItems.resetAllItemsInList(this.shoppingListId);
+        });
     }
 
     private void createNewList() {

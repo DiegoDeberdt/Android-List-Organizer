@@ -48,30 +48,9 @@
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@id/photoButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/itemEditLayout2" />
 
-    <Button
-        android:onClick="photoButtonClick"
-        android:text="@string/item_add_picture_button"
-        android:id="@+id/photoButton"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/itemEditButton"
-        app:layout_constraintTop_toBottomOf="@+id/itemEditLayout2" />
-
-    <ImageView
-        android:minWidth="200dp"
-        android:minHeight="200dp"
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/itemEditButton"
-        app:layout_constraintTop_toBottomOf="@id/itemEditButton"
-        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

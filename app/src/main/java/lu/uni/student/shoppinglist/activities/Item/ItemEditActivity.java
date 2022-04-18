@@ -137,31 +137,4 @@ public class ItemEditActivity extends AppCompatActivity {
         outState.putLong(BUNDLE_ITEM_ID, this.shoppingListItemId);
         outState.putSerializable(BUNDLE_CRUD, this.crudAction);
     }
-
-    public void photoButtonClick(View view) {
-        dispatchTakePictureIntent();
-    }
-
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        try {
-            // TODO replace startActivityForResult
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        } catch (ActivityNotFoundException e) {
-            // display error state to the user
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        ImageView imageView = findViewById(R.id.imageView);
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            imageView.setImageBitmap(imageBitmap);
-        }
-    }
 }
