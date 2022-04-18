@@ -56,10 +56,10 @@
                 android:gravity="center"
                 android:layout_weight="1"
                 android:id="@+id/textViewOptions"
-                android:layout_width="60dp"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="0dp"
-                android:text="&#8942;"
+                android:text="@string/ellipsis"
                 android:textAppearance="?android:textAppearanceLarge" />
 
         </LinearLayout>
