@@ -47,6 +47,7 @@ public interface ShoppingListDao {
             "FROM shopping_list list " +
             "WHERE list.parentId = :parentId")
     LiveData<List<ShoppingListWithCalculatedValues>> loadAllSubLevelLists(long parentId);
+
     @Insert
     long insert(ShoppingList shoppingList);
 
@@ -55,4 +56,7 @@ public interface ShoppingListDao {
 
     @Update
     void update(ShoppingList shoppingList);
+
+    @Query("SELECT * FROM shopping_list WHERE parentId = :parentId")
+    List<ShoppingList> getListsToCopy(long parentId);
 }

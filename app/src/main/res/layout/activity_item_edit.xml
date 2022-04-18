@@ -29,17 +29,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/itemEditLayout1">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/itemEditLayout1"
+        app:layout_constraintBottom_toTopOf="@id/itemEditButton">
 
         <com.google.android.material.textfield.TextInputEditText
             android:gravity="top"
             android:id="@+id/itemEditDescription"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/item_description"
-            android:minHeight="100dp" />
+            android:layout_height="match_parent"
+            android:hint="@string/item_description"  />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button

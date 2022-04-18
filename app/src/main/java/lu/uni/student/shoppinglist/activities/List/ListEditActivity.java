@@ -24,6 +24,7 @@ public class ListEditActivity extends AppCompatActivity {
 
     private Crud crudAction;
     private long shoppingListId;
+    private Long parentShoppingListId;
     private ListEditAdapter listAdapter;
 
     @Override
@@ -35,6 +36,14 @@ public class ListEditActivity extends AppCompatActivity {
 
         if (!intent.hasExtra(Extra.CRUD)) throw new ExtrasNotFoundException(Extra.CRUD);
         this.crudAction = (Crud)intent.getSerializableExtra(Extra.CRUD);
+
+        this.parentShoppingListId = null;
+        if (intent.hasExtra(Extra.PARENT_ID)) {
+            Bundle bundle = intent.getBundleExtra(Extra.PARENT_ID);
+            if (bundle != null) {
+                this.parentShoppingListId = bundle.getLong(Extra.PARENT_ID);
+            }
+        }
 
         initTitleAndLabel(intent);
 
@@ -52,7 +61,7 @@ public class ListEditActivity extends AppCompatActivity {
         RecyclerView imageList = findViewById(R.id.imageList);
         imageList.setAdapter(listAdapter);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 7);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 6);
         imageList.setLayoutManager(layoutManager);
     }
 
@@ -84,7 +93,7 @@ public class ListEditActivity extends AppCompatActivity {
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.displayName = displayName;
         shoppingList.id = this.shoppingListId;
-        // TODO rename column 'imageId'
+        shoppingList.parentId = this.parentShoppingListId;
         shoppingList.iconIndex = listAdapter.getIndexOfSelectedIcon();
 
         ShoppingListDb db = ShoppingListDb.getFileDatabase(getApplication());

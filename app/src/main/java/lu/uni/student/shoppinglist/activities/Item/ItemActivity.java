@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import lu.uni.student.shoppinglist.ExtrasNotFoundException;
@@ -17,6 +18,7 @@ import lu.uni.student.shoppinglist.R;
 import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
 import lu.uni.student.shoppinglist.activities.List.ListAdapter;
+import lu.uni.student.shoppinglist.activities.List.ListEditActivity;
 import lu.uni.student.shoppinglist.activities.List.ListIcons;
 
 public class ItemActivity extends AppCompatActivity {
@@ -53,7 +55,7 @@ public class ItemActivity extends AppCompatActivity {
             }
         });
 
-        viewModel.getShoppingLists(shoppingListId).observe(this, shoppingLists ->{
+        viewModel.getShoppingLists(shoppingListId).observe(this, shoppingLists -> {
             RecyclerView listView = findViewById(R.id.subLists);
             if (listView != null) {
                 int[] iconResourceIds = ListIcons.getResourceIds(getResources(), getPackageName());
@@ -86,5 +88,29 @@ public class ItemActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.item_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.option_create_list:
+                createNewList();
+                return true;
+            case R.id.option_hide_finished_items:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void createNewList() {
+        Bundle bundle = new Bundle();
+        bundle.putLong(Extra.PARENT_ID, this.shoppingListId);
+
+        Intent intent = new Intent(this, ListEditActivity.class);
+        intent.putExtra(Extra.CRUD, Crud.CREATE);
+        intent.putExtra(Extra.PARENT_ID, bundle);
+        startActivity(intent);
     }
 }

@@ -6,4 +6,5 @@ public class Extra {
     public static final String CRUD = "crud_action";
     public static final String NAME = "name";
     public static final String IMAGE_INDEX = "shopping_list_image_index";
+    public static final String PARENT_ID = "parent_shopping_list_id";
 }

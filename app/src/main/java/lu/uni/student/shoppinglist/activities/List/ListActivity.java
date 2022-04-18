@@ -41,6 +41,7 @@ public class ListActivity extends AppCompatActivity {
     public void addButtonClick(View view) {
         Intent intent = new Intent(this, ListEditActivity.class);
         intent.putExtra(Extra.CRUD, Crud.CREATE);
+        intent.putExtra(Extra.PARENT_ID, (Bundle)null);
         startActivity(intent);
     }
 }
