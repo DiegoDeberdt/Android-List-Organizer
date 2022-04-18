@@ -3,8 +3,6 @@ package lu.uni.student.shoppinglist.activities.List;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -28,11 +23,9 @@ import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
 import lu.uni.student.shoppinglist.activities.Item.ItemActivity;
 import lu.uni.student.shoppinglist.repository.ShoppingListDb;
-import lu.uni.student.shoppinglist.repository.ThreadPerTaskExecutor;
 import lu.uni.student.shoppinglist.repository.dao.ShoppingListDao;
 import lu.uni.student.shoppinglist.repository.dao.ShoppingListItemDao;
 import lu.uni.student.shoppinglist.repository.entities.ShoppingList;
-import lu.uni.student.shoppinglist.repository.entities.ShoppingListItem;
 import lu.uni.student.shoppinglist.repository.entities.ShoppingListWithCalculatedValues;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
@@ -127,16 +120,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                 }
                 else if (itemId == R.id.menu_item_copy) {
 
-                    // Copy an existing list
+                    // Copy an existing list (recursively)
 
-                    copyList(daoList, daoItems, item, item.parentId, true);
+                    copyListRecursively(daoList, daoItems, item, item.parentId, true);
                     return true;
                 }
                 else if (itemId == R.id.menu_item_delete) {
 
-                    // Delete a list
+                    // Delete a list (recursively)
 
-                    deleteList(daoList, item.id);
+                    deleteListRecursively(daoList, item.id);
                     return true;
                 }
                 else {
@@ -153,7 +146,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         return localDataSet.size();
     }
 
-    private void deleteList(ShoppingListDao daoList, long id) {
+    private void deleteListRecursively(ShoppingListDao daoList, long id) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         executor.execute(() -> {
@@ -163,7 +156,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             }
             else {
                 for(ShoppingList listItem : childLists) {
-                    deleteList(daoList, listItem.id);
+                    deleteListRecursively(daoList, listItem.id);
                     daoList.delete(listItem.id);
                 }
                 daoList.delete(id);
@@ -171,7 +164,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         });
     }
 
-    private void copyList(ShoppingListDao daoList, ShoppingListItemDao daoItems, ShoppingList item, Long parentId, boolean modifyListName) {
+    private void copyListRecursively(ShoppingListDao daoList, ShoppingListItemDao daoItems, ShoppingList item, Long parentId, boolean modifyListName) {
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -187,7 +180,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
             List<ShoppingList> childLists = daoList.getListsToCopy(item.id);
             for(ShoppingList listItem : childLists) {
-                copyList(daoList, daoItems, listItem, newShoppingList.id, false);
+                copyListRecursively(daoList, daoItems, listItem, newShoppingList.id, false);
             }
         });
     }
