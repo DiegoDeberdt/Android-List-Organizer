@@ -33,4 +33,5 @@
     <string name="edit_list_item">Item Bewerken</string>
     <string name="add_list_item">Item Toevoegen</string>
     <string name="item_row_menu_item_delete">Item Verwijderen</string>
+    <string name="list_copy"> - Copy</string>
 </resources>

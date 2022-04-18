@@ -181,7 +181,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         newShoppingList.iconIndex = item.iconIndex;
         newShoppingList.parentId = parentId;
         newShoppingList.displayName = item.displayName;
-        if (modifyListName) newShoppingList.displayName += " - Copy"; // TODO move to string resource
+        if (modifyListName) newShoppingList.displayName += " - " + context.getResources().getString(R.string.list_copy);
 
         newShoppingList.id = daoList.insert(newShoppingList);
         daoItems.copy(item.id, newShoppingList.id);

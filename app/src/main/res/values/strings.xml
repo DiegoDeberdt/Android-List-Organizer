@@ -24,4 +24,5 @@
     <string name="list_create_action_title">New List</string>
     <string name="list_edit">Edit List</string>
     <string name="list_items">List Items</string>
+    <string name="list_copy">Copy</string>
 </resources>
