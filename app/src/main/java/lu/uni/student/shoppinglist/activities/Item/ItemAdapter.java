@@ -13,12 +13,13 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import lu.uni.student.shoppinglist.R;
 import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
 import lu.uni.student.shoppinglist.repository.ShoppingListDb;
-import lu.uni.student.shoppinglist.repository.ThreadPerTaskExecutor;
 import lu.uni.student.shoppinglist.repository.dao.ShoppingListItemDao;
 import lu.uni.student.shoppinglist.repository.entities.ShoppingListItem;
 
@@ -73,7 +74,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         viewHolder.itemCheckbox.setChecked(item.flagPurchased);
 
         viewHolder.itemCheckbox.setOnClickListener(view -> {
-            ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
+            ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
                 ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
                 ShoppingListItemDao dao = db.shoppingListItemModel();
@@ -114,7 +115,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
                         case R.id.menu_item_delete:
                             ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
                             ShoppingListItemDao dao = db.shoppingListItemModel();
-                            ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
+                            ExecutorService executor = Executors.newSingleThreadExecutor();
                             executor.execute(() -> dao.delete(item.id));
                             return true;
                         default:

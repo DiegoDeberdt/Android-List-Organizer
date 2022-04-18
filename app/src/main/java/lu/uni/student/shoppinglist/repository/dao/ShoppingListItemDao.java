@@ -11,6 +11,7 @@ import lu.uni.student.shoppinglist.repository.entities.*;
 
 @Dao
 public interface ShoppingListItemDao {
+
     @Query("SELECT * FROM shopping_list_item WHERE shoppingListId = :id ORDER BY flagPurchased, displayName COLLATE NOCASE ASC")
     LiveData<List<ShoppingListItem>> loadItemsByListId(long id);
 

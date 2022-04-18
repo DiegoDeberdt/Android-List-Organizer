@@ -12,12 +12,14 @@ import android.widget.Button;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import lu.uni.student.shoppinglist.ExtrasNotFoundException;
 import lu.uni.student.shoppinglist.R;
 import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
 import lu.uni.student.shoppinglist.repository.ShoppingListDb;
-import lu.uni.student.shoppinglist.repository.ThreadPerTaskExecutor;
 import lu.uni.student.shoppinglist.repository.dao.ShoppingListDao;
 import lu.uni.student.shoppinglist.repository.entities.ShoppingList;
 
@@ -106,7 +108,7 @@ public class ListEditActivity extends AppCompatActivity {
         ShoppingListDb db = ShoppingListDb.getFileDatabase(getApplication());
         ShoppingListDao dao = db.shoppingListModel();
 
-        ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
         if (this.crudAction == Crud.CREATE) executor.execute(() -> dao.insert(shoppingList));
         else if (this.crudAction == Crud.UPDATE) executor.execute(() -> dao.update(shoppingList));
 

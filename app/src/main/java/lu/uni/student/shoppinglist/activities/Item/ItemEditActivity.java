@@ -2,16 +2,12 @@ package lu.uni.student.shoppinglist.activities.Item;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -23,7 +19,6 @@ import lu.uni.student.shoppinglist.R;
 import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
 import lu.uni.student.shoppinglist.repository.ShoppingListDb;
-import lu.uni.student.shoppinglist.repository.ThreadPerTaskExecutor;
 import lu.uni.student.shoppinglist.repository.dao.ShoppingListItemDao;
 import lu.uni.student.shoppinglist.repository.entities.ShoppingListItem;
 
@@ -115,7 +110,7 @@ public class ItemEditActivity extends AppCompatActivity {
         ShoppingListDb db = ShoppingListDb.getFileDatabase(this);
         ShoppingListItemDao dao = db.shoppingListItemModel();
 
-        ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
         if (this.crudAction == Crud.CREATE) {
             ShoppingListItem shoppingListItem = new ShoppingListItem();
             shoppingListItem.displayName = displayName;
