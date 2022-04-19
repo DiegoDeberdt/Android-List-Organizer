@@ -19,7 +19,7 @@ public abstract class ShoppingListDb extends RoomDatabase {
 
     public static ShoppingListDb getFileDatabase(Context context) {
         if (INSTANCE == null) {
-            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), ShoppingListDb.class, "shopping_list_db").createFromAsset("database/shopping_list.db").build();
+            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), ShoppingListDb.class, "db_shopping_list").createFromAsset("database/shopping_list.db").build();
         }
         return INSTANCE;
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name">GoDo List Manager</string>
+    <string name="app_name">Shopping List</string>
     <string name="ellipsis" translatable="false">&#8942;</string>
     <string name="save_changes_button">Save Changes</string>
 
