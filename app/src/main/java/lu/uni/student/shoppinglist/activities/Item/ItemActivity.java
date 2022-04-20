@@ -8,11 +8,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,8 +25,8 @@ import lu.uni.student.shoppinglist.activities.Extra;
 import lu.uni.student.shoppinglist.activities.List.ListAdapter;
 import lu.uni.student.shoppinglist.activities.List.ListEditActivity;
 import lu.uni.student.shoppinglist.activities.List.ListIcons;
+import lu.uni.student.shoppinglist.activities.Request;
 import lu.uni.student.shoppinglist.repository.ShoppingListDb;
-import lu.uni.student.shoppinglist.repository.dao.ShoppingListDao;
 import lu.uni.student.shoppinglist.repository.dao.ShoppingListItemDao;
 
 public class ItemActivity extends AppCompatActivity {
@@ -80,7 +81,7 @@ public class ItemActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ItemEditActivity.class);
         intent.putExtra(Extra.CRUD, Crud.CREATE);
         intent.putExtra(Extra.LIST_ID, this.shoppingListId);
-        startActivity(intent);
+        startActivityForResult(intent, Request.CREATE_ITEM_REQUEST);
     }
 
     @Override
@@ -116,7 +117,6 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     private void resetAllItemsInList() {
-
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             ShoppingListDb db = ShoppingListDb.getFileDatabase(this);
@@ -132,6 +132,25 @@ public class ItemActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ListEditActivity.class);
         intent.putExtra(Extra.CRUD, Crud.CREATE);
         intent.putExtra(Extra.PARENT_ID, bundle);
-        startActivity(intent);
+
+        startActivityForResult(intent, Request.CREATE_LIST_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        if (resultCode != Request.REQUEST_RESPONSE) return;
+
+        View contextView = findViewById(R.id.item_fab);
+        if (requestCode == Request.CREATE_ITEM_REQUEST) {
+            Snackbar.make(contextView, R.string.snackbar_new_item_created, Snackbar.LENGTH_SHORT).show();
+        }
+        else if (requestCode == Request.CREATE_LIST_REQUEST) {
+            Snackbar.make(contextView, R.string.snackbar_new_list_created, Snackbar.LENGTH_SHORT).show();
+        }
+        else if (requestCode == Request.UPDATE_REQUEST) {
+            Snackbar.make(contextView, R.string.snackbar_item_updated, Snackbar.LENGTH_SHORT).show();
+        }
     }
 }

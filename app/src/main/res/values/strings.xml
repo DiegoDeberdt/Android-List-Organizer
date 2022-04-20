@@ -32,4 +32,6 @@
     <string name="snackbar_list_deleted">The list was deleted</string>
     <string name="snackbar_list_copied">The list was copied</string>
     <string name="snackbar_item_deleted">The item was deleted</string>
+    <string name="snackbar_new_item_created">New item was created</string>
+    <string name="snackbar_item_updated">Item was updated</string>
 </resources>

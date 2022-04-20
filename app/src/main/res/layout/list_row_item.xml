@@ -16,7 +16,10 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:padding="10dp"
+            android:paddingLeft="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingEnd="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -55,7 +58,7 @@
             <TextView
                 android:gravity="center"
                 android:layout_weight="1"
-                android:id="@+id/textViewOptions"
+                android:id="@+id/list_row_options"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="0dp"

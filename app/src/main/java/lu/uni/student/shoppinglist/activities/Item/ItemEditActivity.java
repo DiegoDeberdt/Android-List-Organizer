@@ -18,6 +18,7 @@ import lu.uni.student.shoppinglist.ExtrasNotFoundException;
 import lu.uni.student.shoppinglist.R;
 import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
+import lu.uni.student.shoppinglist.activities.Request;
 import lu.uni.student.shoppinglist.repository.ShoppingListDb;
 import lu.uni.student.shoppinglist.repository.dao.ShoppingListItemDao;
 import lu.uni.student.shoppinglist.repository.entities.ShoppingListItem;
@@ -109,14 +110,13 @@ public class ItemEditActivity extends AppCompatActivity {
         ShoppingListItemDao dao = db.shoppingListItemModel();
 
         if (this.crudAction == Crud.CREATE) {
-
             createNewListItem(displayName, description, dao);
         }
         else if (this.crudAction == Crud.UPDATE) {
-
             updateListItem(displayName, description, dao);
         }
 
+        setResult(Request.REQUEST_RESPONSE);
         finish();
     }
 

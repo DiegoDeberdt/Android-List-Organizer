@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +27,7 @@ import lu.uni.student.shoppinglist.R;
 import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
 import lu.uni.student.shoppinglist.activities.Item.ItemActivity;
+import lu.uni.student.shoppinglist.activities.Request;
 import lu.uni.student.shoppinglist.repository.ShoppingListDb;
 import lu.uni.student.shoppinglist.repository.dao.ShoppingListDao;
 import lu.uni.student.shoppinglist.repository.dao.ShoppingListItemDao;
@@ -54,7 +54,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             listName = view.findViewById(R.id.list_name);
             listSize = view.findViewById(R.id.list_size);
             mainLayout = view.findViewById(R.id.mainLayout);
-            buttonViewOption = view.findViewById(R.id.textViewOptions);
+            buttonViewOption = view.findViewById(R.id.list_row_options);
             listImage = view.findViewById(R.id.list_image);
         }
     }
@@ -153,7 +153,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             intent.putExtra(Extra.PARENT_ID, bundle);
         }
 
-        this.activity.startActivityForResult(intent, ListActivity.UPDATE_REQUEST);
+        this.activity.startActivityForResult(intent, Request.UPDATE_REQUEST);
     }
 
     private void deleteList(ShoppingListDao daoList, long id) {
@@ -163,13 +163,13 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
         executor.execute(() -> {
 
-            // Archive the list
+            // Archive the list then show a snackbar with an Undo action
 
             daoList.archive(id);
 
             mainThreadHandler.post(() -> {
 
-                View contextView = this.activity.findViewById(R.id.list_fab);
+                View contextView = this.activity.findViewById(R.id.list_row_options);
                 Snackbar undoDelete = Snackbar.make(contextView, R.string.snackbar_list_deleted, Snackbar.LENGTH_LONG);
 
                 undoDelete.setAction(R.string.snackbar_list_delete_undo, view -> {
@@ -226,7 +226,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
             mainThreadHandler.post(() -> {
 
-                View contextView = this.activity.findViewById(R.id.list_fab);
+                View contextView = this.activity.findViewById(R.id.list_row_options);
                 Snackbar.make(contextView, R.string.snackbar_list_copied, Snackbar.LENGTH_SHORT).show();
             });
         });

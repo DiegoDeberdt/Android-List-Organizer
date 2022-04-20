@@ -19,6 +19,7 @@ import lu.uni.student.shoppinglist.ExtrasNotFoundException;
 import lu.uni.student.shoppinglist.R;
 import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
+import lu.uni.student.shoppinglist.activities.Request;
 import lu.uni.student.shoppinglist.repository.ShoppingListDb;
 import lu.uni.student.shoppinglist.repository.dao.ShoppingListDao;
 import lu.uni.student.shoppinglist.repository.entities.ShoppingList;
@@ -110,14 +111,13 @@ public class ListEditActivity extends AppCompatActivity {
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         if (this.crudAction == Crud.CREATE) {
-            setResult(ListActivity.REQUEST_RESPONSE);
             executor.execute(() -> dao.insert(shoppingList));
         }
         else if (this.crudAction == Crud.UPDATE) {
-            setResult(ListActivity.REQUEST_RESPONSE);
             executor.execute(() -> dao.update(shoppingList));
         }
 
+        setResult(Request.REQUEST_RESPONSE);
         finish();
     }
 }

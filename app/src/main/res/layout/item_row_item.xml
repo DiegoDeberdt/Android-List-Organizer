@@ -70,7 +70,7 @@
             <TextView
                 android:gravity="center"
                 android:layout_weight="5"
-                android:id="@+id/textViewOptions"
+                android:id="@+id/list_row_options"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="0dp"

@@ -1,11 +1,9 @@
 package lu.uni.student.shoppinglist.activities.Item;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +24,7 @@ import java.util.concurrent.Executors;
 import lu.uni.student.shoppinglist.R;
 import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
+import lu.uni.student.shoppinglist.activities.Request;
 import lu.uni.student.shoppinglist.repository.ShoppingListDb;
 import lu.uni.student.shoppinglist.repository.dao.ShoppingListItemDao;
 import lu.uni.student.shoppinglist.repository.entities.ShoppingListItem;
@@ -50,7 +49,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             this.itemDescription = view.findViewById(R.id.item_description);
             this.itemCheckbox = view.findViewById(R.id.item_checkbox);
             this.descriptionLayout = view.findViewById(R.id.descriptionLayout);
-            this.buttonViewOption = view.findViewById(R.id.textViewOptions);
+            this.buttonViewOption = view.findViewById(R.id.list_row_options);
         }
     }
 
@@ -185,6 +184,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         intent.putExtra(Extra.CRUD, Crud.UPDATE);
         intent.putExtra(Extra.LIST_ID, item.shoppingListId);
         intent.putExtra(Extra.ITEM_ID, item.id);
-        activity.startActivity(intent);
+
+        activity.startActivityForResult(intent, Request.UPDATE_REQUEST);
     }
 }
