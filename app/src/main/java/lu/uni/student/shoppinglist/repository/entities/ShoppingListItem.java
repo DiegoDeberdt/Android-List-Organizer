@@ -26,4 +26,7 @@ public class ShoppingListItem {
     @NonNull
     @ColumnInfo(defaultValue = "0")
     public boolean flagPurchased;
+
+    @NonNull
+    public boolean archived;
 }

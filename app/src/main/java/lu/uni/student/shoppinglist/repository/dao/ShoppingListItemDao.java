@@ -12,7 +12,7 @@ import lu.uni.student.shoppinglist.repository.entities.*;
 @Dao
 public interface ShoppingListItemDao {
 
-    @Query("SELECT * FROM shopping_list_item WHERE shoppingListId = :id ORDER BY flagPurchased, displayName COLLATE NOCASE ASC")
+    @Query("SELECT * FROM shopping_list_item WHERE shoppingListId = :id AND archived = 0 ORDER BY flagPurchased, displayName COLLATE NOCASE ASC")
     LiveData<List<ShoppingListItem>> loadItemsByListId(long id);
 
     @Query("SELECT * FROM shopping_list_item WHERE id = :id")
@@ -24,16 +24,22 @@ public interface ShoppingListItemDao {
     @Query("DELETE FROM shopping_list_item WHERE id = :id")
     void delete(long id);
 
+    @Query("UPDATE shopping_list_item SET archived = 1 WHERE id = :id")
+    void archive(long id);
+
+    @Query("UPDATE shopping_list_item SET archived = 0 WHERE id = :id")
+    void restore(long id);
+
     @Query("UPDATE shopping_list_item SET displayName = :displayName, description = :description WHERE id = :id")
     void update(long id, String displayName, String description);
 
     @Query("UPDATE shopping_list_item SET flagPurchased = :flagPurchased WHERE id= :id ")
     void update(long id, boolean flagPurchased);
 
-    @Query("INSERT INTO shopping_list_item(shoppingListId, displayName, description) " +
-           "SELECT :destinationId, displayName, description FROM shopping_list_item WHERE shoppingListId = :sourceId")
+    @Query("INSERT INTO shopping_list_item(shoppingListId, displayName, description, archived) " +
+           "SELECT :destinationId, displayName, description, 0 FROM shopping_list_item WHERE shoppingListId = :sourceId AND archived = 0")
     void copy(long sourceId, long destinationId);
 
-    @Query("UPDATE shopping_list_item SET flagPurchased = 0 WHERE shoppingListId = :listId")
+    @Query("UPDATE shopping_list_item SET flagPurchased = 0 WHERE shoppingListId = :listId AND archived = 0")
     void resetAllItemsInList(long listId);
 }

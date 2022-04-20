@@ -25,4 +25,7 @@ public class ShoppingList {
 
     // Nullable !
     public Long parentId;
+
+    @NonNull
+    public boolean archived;
 }

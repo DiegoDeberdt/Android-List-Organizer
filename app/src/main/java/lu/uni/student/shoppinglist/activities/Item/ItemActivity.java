@@ -66,7 +66,7 @@ public class ItemActivity extends AppCompatActivity {
             RecyclerView listView = findViewById(R.id.subLists);
             if (listView != null) {
                 int[] iconResourceIds = ListIcons.getResourceIds(getResources(), getPackageName());
-                final ListAdapter adapter = new ListAdapter(context, shoppingLists, iconResourceIds);
+                final ListAdapter adapter = new ListAdapter(this, shoppingLists, iconResourceIds);
                 listView.setAdapter(adapter);
 
                 LinearLayoutManager layoutManager = new LinearLayoutManager(this);

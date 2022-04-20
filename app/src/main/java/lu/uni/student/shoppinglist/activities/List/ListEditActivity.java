@@ -109,8 +109,14 @@ public class ListEditActivity extends AppCompatActivity {
         ShoppingListDao dao = db.shoppingListModel();
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        if (this.crudAction == Crud.CREATE) executor.execute(() -> dao.insert(shoppingList));
-        else if (this.crudAction == Crud.UPDATE) executor.execute(() -> dao.update(shoppingList));
+        if (this.crudAction == Crud.CREATE) {
+            setResult(ListActivity.REQUEST_RESPONSE);
+            executor.execute(() -> dao.insert(shoppingList));
+        }
+        else if (this.crudAction == Crud.UPDATE) {
+            setResult(ListActivity.REQUEST_RESPONSE);
+            executor.execute(() -> dao.update(shoppingList));
+        }
 
         finish();
     }

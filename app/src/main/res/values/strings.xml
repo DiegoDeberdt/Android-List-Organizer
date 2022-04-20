@@ -25,4 +25,11 @@
     <string name="list_edit">Edit List</string>
     <string name="list_items">List Items</string>
     <string name="list_copy">Copy</string>
+
+    <string name="snackbar_new_list_created">New list was created</string>
+    <string name="snackbar_list_updated">List was updated</string>
+    <string name="snackbar_list_delete_undo">UNDO</string>
+    <string name="snackbar_list_deleted">The list was deleted</string>
+    <string name="snackbar_list_copied">The list was copied</string>
+    <string name="snackbar_item_deleted">The item was deleted</string>
 </resources>

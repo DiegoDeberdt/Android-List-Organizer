@@ -1,8 +1,11 @@
 package lu.uni.student.shoppinglist.activities.List;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +15,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.core.os.HandlerCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -30,7 +36,7 @@ import lu.uni.student.shoppinglist.repository.entities.ShoppingListWithCalculate
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
-    private final Context context;
+    private final Activity activity;
     private final List<ShoppingListWithCalculatedValues> localDataSet;
     private final int[] imageId;
 
@@ -53,8 +59,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         }
     }
 
-    public ListAdapter(Context context, List<ShoppingListWithCalculatedValues> dataSet, int[] imageId) {
-        this.context = context;
+    public ListAdapter(Activity activity, List<ShoppingListWithCalculatedValues> dataSet, int[] imageId) {
+        this.activity = activity;
         this.localDataSet = dataSet;
         this.imageId = imageId;
     }
@@ -82,19 +88,19 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         viewHolder.listSize.setText(listSize);
 
         viewHolder.mainLayout.setOnClickListener(view -> {
-            Intent intent = new Intent(context, ItemActivity.class);
+            Intent intent = new Intent(this.activity, ItemActivity.class);
             intent.putExtra(Extra.LIST_ID, item.id);
             intent.putExtra(Extra.NAME, item.displayName);
-            context.startActivity(intent);
+            this.activity.startActivity(intent);
         });
 
         viewHolder.buttonViewOption.setOnClickListener(view -> {
 
-            ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
+            ShoppingListDb db = ShoppingListDb.getFileDatabase(this.activity);
             ShoppingListDao daoList = db.shoppingListModel();
             ShoppingListItemDao daoItems = db.shoppingListItemModel();
 
-            PopupMenu popupMenu = new PopupMenu(context, viewHolder.buttonViewOption);
+            PopupMenu popupMenu = new PopupMenu(this.activity, viewHolder.buttonViewOption);
             popupMenu.inflate(R.menu.list_row_menu);
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 int itemId = menuItem.getItemId();
@@ -135,7 +141,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     }
 
     private void editList(ShoppingList item) {
-        Intent intent = new Intent(context, ListEditActivity.class);
+        Intent intent = new Intent(this.activity, ListEditActivity.class);
         intent.putExtra(Extra.CRUD, Crud.UPDATE);
         intent.putExtra(Extra.LIST_ID, item.id);
         intent.putExtra(Extra.NAME, item.displayName);
@@ -147,13 +153,54 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             intent.putExtra(Extra.PARENT_ID, bundle);
         }
 
-        context.startActivity(intent);
+        this.activity.startActivityForResult(intent, ListActivity.UPDATE_REQUEST);
     }
 
     private void deleteList(ShoppingListDao daoList, long id) {
+
         ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
+
         executor.execute(() -> {
-            deleteListRecursively(daoList, id);
+
+            // Archive the list
+
+            daoList.archive(id);
+
+            mainThreadHandler.post(() -> {
+
+                View contextView = this.activity.findViewById(R.id.list_fab);
+                Snackbar undoDelete = Snackbar.make(contextView, R.string.snackbar_list_deleted, Snackbar.LENGTH_LONG);
+
+                undoDelete.setAction(R.string.snackbar_list_delete_undo, view -> {
+                    ExecutorService undoExecutor = Executors.newSingleThreadExecutor();
+                    undoExecutor.execute(()-> {
+
+                        // The user clicked the UNDO button so restore the list
+
+                        daoList.restore(id);
+                    });
+                });
+
+                undoDelete.addCallback(new Snackbar.Callback() {
+
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+
+                            ExecutorService executor = Executors.newSingleThreadExecutor();
+                            executor.execute(() -> {
+
+                                // Permanently delete the list
+
+                                deleteListRecursively(daoList, id);
+                            });
+                        }
+                    }
+                });
+
+                undoDelete.show();
+            });
         });
     }
 
@@ -171,8 +218,17 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     private void copyList(ShoppingListDao daoList, ShoppingListItemDao daoItems, ShoppingList item, Long parentId, boolean modifyListName) {
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
+
         executor.execute(() -> {
+
             copyListRecursively(daoList, daoItems, item, parentId, modifyListName);
+
+            mainThreadHandler.post(() -> {
+
+                View contextView = this.activity.findViewById(R.id.list_fab);
+                Snackbar.make(contextView, R.string.snackbar_list_copied, Snackbar.LENGTH_SHORT).show();
+            });
         });
     }
 
@@ -181,7 +237,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         newShoppingList.iconIndex = item.iconIndex;
         newShoppingList.parentId = parentId;
         newShoppingList.displayName = item.displayName;
-        if (modifyListName) newShoppingList.displayName += " - " + context.getResources().getString(R.string.list_copy);
+        if (modifyListName) newShoppingList.displayName += " - " + this.activity.getResources().getString(R.string.list_copy);
 
         newShoppingList.id = daoList.insert(newShoppingList);
         daoItems.copy(item.id, newShoppingList.id);

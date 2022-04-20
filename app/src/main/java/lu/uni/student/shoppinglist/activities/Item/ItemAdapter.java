@@ -1,7 +1,11 @@
 package lu.uni.student.shoppinglist.activities.Item;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +14,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.PopupMenu;
+import androidx.core.os.HandlerCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -25,7 +32,7 @@ import lu.uni.student.shoppinglist.repository.entities.ShoppingListItem;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
-    private final Context context;
+    private final Activity activity;
     private final List<ShoppingListItem> localDataSet;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -47,8 +54,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         }
     }
 
-    public ItemAdapter(Context context, List<ShoppingListItem> dataSet) {
-        this.context = context;
+    public ItemAdapter(Activity activity, List<ShoppingListItem> dataSet) {
+        this.activity = activity;
         this.localDataSet = dataSet;
     }
 
@@ -76,7 +83,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
-                ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
+                ShoppingListDb db = ShoppingListDb.getFileDatabase(this.activity);
                 ShoppingListItemDao dao = db.shoppingListItemModel();
                 dao.update(item.id, ((CheckBox)view).isChecked());
             });
@@ -99,7 +106,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             @Override
             public void onClick(View view) {
 
-                PopupMenu popup = new PopupMenu(context, viewHolder.buttonViewOption);
+                PopupMenu popup = new PopupMenu(activity, viewHolder.buttonViewOption);
                 popup.inflate(R.menu.item_row_menu);
                 popup.setOnMenuItemClickListener(menuItem -> {
                     switch (menuItem.getItemId()) {
@@ -126,17 +133,58 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     }
 
     private void onMenuItemDeleteClicked(long id) {
-        ShoppingListDb db = ShoppingListDb.getFileDatabase(context);
+        ShoppingListDb db = ShoppingListDb.getFileDatabase(activity);
         ShoppingListItemDao dao = db.shoppingListItemModel();
+
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> dao.delete(id));
+        Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
+
+        executor.execute(() -> {
+
+            // Archive the list item
+
+            dao.archive(id);
+
+            mainThreadHandler.post(() -> {
+                View contextView = this.activity.findViewById(R.id.item_fab);
+                Snackbar undoDelete = Snackbar.make(contextView, R.string.snackbar_item_deleted, Snackbar.LENGTH_LONG);
+
+                undoDelete.setAction(R.string.snackbar_list_delete_undo, view -> {
+                    ExecutorService undoExecutor = Executors.newSingleThreadExecutor();
+                    undoExecutor.execute(()-> {
+
+                        // The user clicked the UNDO button so restore the list item
+
+                        dao.restore(id);
+                    });
+                });
+
+                undoDelete.addCallback(new Snackbar.Callback() {
+
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+
+                            ExecutorService executor = Executors.newSingleThreadExecutor();
+                            executor.execute(() -> {
+
+                                // Permanently delete the archived list item
+
+                                dao.delete(id);
+                            });
+                        }
+                    }
+                });
+                undoDelete.show();
+            });
+        });
     }
 
     private void onMenuItemEditClicked(ShoppingListItem item) {
-        Intent intent = new Intent(context, ItemEditActivity.class);
+        Intent intent = new Intent(activity, ItemEditActivity.class);
         intent.putExtra(Extra.CRUD, Crud.UPDATE);
         intent.putExtra(Extra.LIST_ID, item.shoppingListId);
         intent.putExtra(Extra.ITEM_ID, item.id);
-        context.startActivity(intent);
+        activity.startActivity(intent);
     }
 }
