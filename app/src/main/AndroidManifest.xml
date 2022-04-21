@@ -9,27 +9,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShoppingList">
-
         <activity
-            android:label="@string/item_edit_action_title"
+            android:name=".DrawerBaseActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.Item.ItemEditActivity"
-            android:exported="false" />
-
+            android:exported="false"
+            android:label="@string/item_edit_action_title" />
         <activity
-            android:label="@string/list_edit"
             android:name=".activities.List.ListEditActivity"
-            android:exported="false" />
-
+            android:exported="false"
+            android:label="@string/list_edit" />
         <activity
-            android:label="@string/list_items"
             android:name=".activities.Item.ItemActivity"
-            android:exported="false" />
-
+            android:exported="false"
+            android:label="@string/list_items" />
         <activity
             android:name=".activities.List.ListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

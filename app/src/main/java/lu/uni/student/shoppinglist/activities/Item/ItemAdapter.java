@@ -135,48 +135,33 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         ShoppingListDb db = ShoppingListDb.getFileDatabase(activity);
         ShoppingListItemDao dao = db.shoppingListItemModel();
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
+        mainThreadHandler.post(() -> {
+            View contextView = this.activity.findViewById(R.id.item_fab);
+            Snackbar undoDelete = Snackbar.make(contextView, R.string.snackbar_item_deleted, Snackbar.LENGTH_LONG);
 
-        executor.execute(() -> {
-
-            // Archive the list item
-
-            dao.archive(id);
-
-            mainThreadHandler.post(() -> {
-                View contextView = this.activity.findViewById(R.id.item_fab);
-                Snackbar undoDelete = Snackbar.make(contextView, R.string.snackbar_item_deleted, Snackbar.LENGTH_LONG);
-
-                undoDelete.setAction(R.string.snackbar_list_delete_undo, view -> {
-                    ExecutorService undoExecutor = Executors.newSingleThreadExecutor();
-                    undoExecutor.execute(()-> {
-
-                        // The user clicked the UNDO button so restore the list item
-
-                        dao.restore(id);
-                    });
-                });
-
-                undoDelete.addCallback(new Snackbar.Callback() {
-
-                    @Override
-                    public void onDismissed(Snackbar snackbar, int event) {
-                        if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
-
-                            ExecutorService executor = Executors.newSingleThreadExecutor();
-                            executor.execute(() -> {
-
-                                // Permanently delete the archived list item
-
-                                dao.delete(id);
-                            });
-                        }
-                    }
-                });
-                undoDelete.show();
+            undoDelete.setAction(R.string.snackbar_list_delete_undo, view -> {
+                // The user clicked the UNDO button so restore the list item
+                ExecutorService undoExecutor = Executors.newSingleThreadExecutor();
+                undoExecutor.execute(()-> dao.restore(id););
             });
+
+            undoDelete.addCallback(new Snackbar.Callback() {
+
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                        // Permanently delete the archived list item
+                        ExecutorService executor = Executors.newSingleThreadExecutor();
+                        executor.execute(() -> dao.delete(id));
+                    }
+                }
+            });
+            undoDelete.show();
         });
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> dao.archive(id));
     }
 
     private void onMenuItemEditClicked(ShoppingListItem item) {

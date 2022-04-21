@@ -105,30 +105,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 int itemId = menuItem.getItemId();
 
-                if (itemId == R.id.menu_item_rename) {
+                boolean returnValue = true;
 
-                    // Edit an existing list
+                if (itemId == R.id.menu_item_rename) editList(item);
+                else if (itemId == R.id.menu_item_copy) copyList(daoList, daoItems, item, item.parentId, true);
+                else if (itemId == R.id.menu_item_delete) deleteList(daoList, item.id);
+                else returnValue = false;
 
-                    editList(item);
-                    return true;
-                }
-                else if (itemId == R.id.menu_item_copy) {
-
-                    // Copy an existing list (recursively)
-
-                    copyList(daoList, daoItems, item, item.parentId, true);
-                    return true;
-                }
-                else if (itemId == R.id.menu_item_delete) {
-
-                    // Delete a list (recursively)
-
-                    deleteList(daoList, item.id);
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return returnValue;
             });
 
             popupMenu.show();
@@ -158,50 +142,35 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private void deleteList(ShoppingListDao daoList, long id) {
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
+        mainThreadHandler.post(() -> {
 
-        executor.execute(() -> {
+            View contextView = this.activity.findViewById(R.id.list_row_options);
+            Snackbar undoDelete = Snackbar.make(contextView, R.string.snackbar_list_deleted, Snackbar.LENGTH_LONG);
 
-            // Archive the list then show a snackbar with an Undo action
-
-            daoList.archive(id);
-
-            mainThreadHandler.post(() -> {
-
-                View contextView = this.activity.findViewById(R.id.list_row_options);
-                Snackbar undoDelete = Snackbar.make(contextView, R.string.snackbar_list_deleted, Snackbar.LENGTH_LONG);
-
-                undoDelete.setAction(R.string.snackbar_list_delete_undo, view -> {
-                    ExecutorService undoExecutor = Executors.newSingleThreadExecutor();
-                    undoExecutor.execute(()-> {
-
-                        // The user clicked the UNDO button so restore the list
-
-                        daoList.restore(id);
-                    });
-                });
-
-                undoDelete.addCallback(new Snackbar.Callback() {
-
-                    @Override
-                    public void onDismissed(Snackbar snackbar, int event) {
-                        if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
-
-                            ExecutorService executor = Executors.newSingleThreadExecutor();
-                            executor.execute(() -> {
-
-                                // Permanently delete the list
-
-                                deleteListRecursively(daoList, id);
-                            });
-                        }
-                    }
-                });
-
-                undoDelete.show();
+            undoDelete.setAction(R.string.snackbar_list_delete_undo, view -> {
+                // The user clicked the UNDO button so restore the list
+                ExecutorService undoExecutor = Executors.newSingleThreadExecutor();
+                undoExecutor.execute(()-> daoList.restore(id));
             });
+
+            undoDelete.addCallback(new Snackbar.Callback() {
+
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                    // Permanently delete the list
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    executor.execute(() -> deleteListRecursively(daoList, id));
+                }
+                }
+            });
+
+            undoDelete.show();
         });
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> daoList.archive(id));
     }
 
     private void deleteListRecursively(ShoppingListDao daoList, long id) {
