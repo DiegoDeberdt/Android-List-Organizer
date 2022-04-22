@@ -1,6 +1,6 @@
 package lu.uni.student.shoppinglist.repository.entities;
 
-public class ShoppingListWithCalculatedValues extends ShoppingList {
+public class ListEntityWithCalculatedValues extends ListEntity {
 
     public int totalNumberOfItems = -1;
 

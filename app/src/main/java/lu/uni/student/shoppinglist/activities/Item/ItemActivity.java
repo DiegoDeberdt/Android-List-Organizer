@@ -26,8 +26,8 @@ import lu.uni.student.shoppinglist.activities.List.ListAdapter;
 import lu.uni.student.shoppinglist.activities.List.ListEditActivity;
 import lu.uni.student.shoppinglist.activities.List.ListIcons;
 import lu.uni.student.shoppinglist.activities.Request;
-import lu.uni.student.shoppinglist.repository.ShoppingListDb;
-import lu.uni.student.shoppinglist.repository.dao.ShoppingListItemDao;
+import lu.uni.student.shoppinglist.repository.ListDb;
+import lu.uni.student.shoppinglist.repository.dao.ListItemDao;
 
 public class ItemActivity extends AppCompatActivity {
 
@@ -119,8 +119,8 @@ public class ItemActivity extends AppCompatActivity {
     private void resetAllItemsInList() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-            ShoppingListDb db = ShoppingListDb.getFileDatabase(this);
-            ShoppingListItemDao daoItems = db.shoppingListItemModel();
+            ListDb db = ListDb.getFileDatabase(this);
+            ListItemDao daoItems = db.shoppingListItemModel();
             daoItems.resetAllItemsInList(this.shoppingListId);
         });
     }

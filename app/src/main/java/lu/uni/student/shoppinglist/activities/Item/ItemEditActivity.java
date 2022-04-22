@@ -19,9 +19,9 @@ import lu.uni.student.shoppinglist.R;
 import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
 import lu.uni.student.shoppinglist.activities.Request;
-import lu.uni.student.shoppinglist.repository.ShoppingListDb;
-import lu.uni.student.shoppinglist.repository.dao.ShoppingListItemDao;
-import lu.uni.student.shoppinglist.repository.entities.ShoppingListItem;
+import lu.uni.student.shoppinglist.repository.ListDb;
+import lu.uni.student.shoppinglist.repository.dao.ListItemDao;
+import lu.uni.student.shoppinglist.repository.entities.ListItemEntity;
 
 public class ItemEditActivity extends AppCompatActivity {
 
@@ -58,9 +58,9 @@ public class ItemEditActivity extends AppCompatActivity {
 
                 // Query the database
 
-                ShoppingListDb db = ShoppingListDb.getFileDatabase(getApplication());
-                ShoppingListItemDao dao = db.shoppingListItemModel();
-                ShoppingListItem item = dao.getItemById(this.shoppingListItemId);
+                ListDb db = ListDb.getFileDatabase(getApplication());
+                ListItemDao dao = db.shoppingListItemModel();
+                ListItemEntity item = dao.getItemById(this.shoppingListItemId);
 
                 handler.post(() -> {
 
@@ -106,8 +106,8 @@ public class ItemEditActivity extends AppCompatActivity {
         TextInputEditText descriptionTextView = findViewById(R.id.itemEditDescription);
         final String description = descriptionTextView.getText().toString();
 
-        ShoppingListDb db = ShoppingListDb.getFileDatabase(this);
-        ShoppingListItemDao dao = db.shoppingListItemModel();
+        ListDb db = ListDb.getFileDatabase(this);
+        ListItemDao dao = db.shoppingListItemModel();
 
         if (this.crudAction == Crud.CREATE) {
             createNewListItem(displayName, description, dao);
@@ -120,18 +120,18 @@ public class ItemEditActivity extends AppCompatActivity {
         finish();
     }
 
-    private void updateListItem(final String displayName, final String description, final ShoppingListItemDao dao) {
+    private void updateListItem(final String displayName, final String description, final ListItemDao dao) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> dao.update(this.shoppingListItemId, displayName, description));
     }
 
-    private void createNewListItem(final String displayName, final String description, final ShoppingListItemDao dao) {
-        ShoppingListItem shoppingListItem = new ShoppingListItem();
-        shoppingListItem.displayName = displayName;
-        shoppingListItem.description = description;
-        shoppingListItem.shoppingListId = this.shoppingListId;
+    private void createNewListItem(final String displayName, final String description, final ListItemDao dao) {
+        ListItemEntity listItemEntity = new ListItemEntity();
+        listItemEntity.displayName = displayName;
+        listItemEntity.description = description;
+        listItemEntity.listId = this.shoppingListId;
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> dao.insert(shoppingListItem));
+        executor.execute(() -> dao.insert(listItemEntity));
     }
 }

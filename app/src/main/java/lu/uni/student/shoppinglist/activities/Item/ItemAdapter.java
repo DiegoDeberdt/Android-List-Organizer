@@ -25,14 +25,14 @@ import lu.uni.student.shoppinglist.R;
 import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
 import lu.uni.student.shoppinglist.activities.Request;
-import lu.uni.student.shoppinglist.repository.ShoppingListDb;
-import lu.uni.student.shoppinglist.repository.dao.ShoppingListItemDao;
-import lu.uni.student.shoppinglist.repository.entities.ShoppingListItem;
+import lu.uni.student.shoppinglist.repository.ListDb;
+import lu.uni.student.shoppinglist.repository.dao.ListItemDao;
+import lu.uni.student.shoppinglist.repository.entities.ListItemEntity;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
     private final Activity activity;
-    private final List<ShoppingListItem> localDataSet;
+    private final List<ListItemEntity> localDataSet;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -53,7 +53,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         }
     }
 
-    public ItemAdapter(Activity activity, List<ShoppingListItem> dataSet) {
+    public ItemAdapter(Activity activity, List<ListItemEntity> dataSet) {
         this.activity = activity;
         this.localDataSet = dataSet;
     }
@@ -70,11 +70,11 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ItemAdapter.ViewHolder viewHolder, final int position) {
 
-        ShoppingListItem item = localDataSet.get(position);
+        ListItemEntity item = localDataSet.get(position);
 
         viewHolder.itemName.setText(item.displayName);
         viewHolder.itemDescription.setText(item.description);
-        viewHolder.itemCheckbox.setChecked(item.flagPurchased);
+        viewHolder.itemCheckbox.setChecked(item.purchasedFlag);
 
         viewHolder.itemCheckbox.setOnClickListener(view -> {
 
@@ -82,8 +82,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
-                ShoppingListDb db = ShoppingListDb.getFileDatabase(this.activity);
-                ShoppingListItemDao dao = db.shoppingListItemModel();
+                ListDb db = ListDb.getFileDatabase(this.activity);
+                ListItemDao dao = db.shoppingListItemModel();
                 dao.update(item.id, ((CheckBox)view).isChecked());
             });
         });
@@ -132,8 +132,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     }
 
     private void onMenuItemDeleteClicked(long id) {
-        ShoppingListDb db = ShoppingListDb.getFileDatabase(activity);
-        ShoppingListItemDao dao = db.shoppingListItemModel();
+        ListDb db = ListDb.getFileDatabase(activity);
+        ListItemDao dao = db.shoppingListItemModel();
 
         Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
         mainThreadHandler.post(() -> {
@@ -150,7 +150,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
                 @Override
                 public void onDismissed(Snackbar snackbar, int event) {
-                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT || event == Snackbar.Callback.DISMISS_EVENT_MANUAL) {
                         // Permanently delete the archived list item
                         ExecutorService executor = Executors.newSingleThreadExecutor();
                         executor.execute(() -> dao.delete(id));
@@ -164,10 +164,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         executor.execute(() -> dao.archive(id));
     }
 
-    private void onMenuItemEditClicked(ShoppingListItem item) {
+    private void onMenuItemEditClicked(ListItemEntity item) {
         Intent intent = new Intent(activity, ItemEditActivity.class);
         intent.putExtra(Extra.CRUD, Crud.UPDATE);
-        intent.putExtra(Extra.LIST_ID, item.shoppingListId);
+        intent.putExtra(Extra.LIST_ID, item.listId);
         intent.putExtra(Extra.ITEM_ID, item.id);
 
         activity.startActivityForResult(intent, Request.UPDATE_REQUEST);

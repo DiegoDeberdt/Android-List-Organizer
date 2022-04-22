@@ -20,9 +20,9 @@ import lu.uni.student.shoppinglist.R;
 import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
 import lu.uni.student.shoppinglist.activities.Request;
-import lu.uni.student.shoppinglist.repository.ShoppingListDb;
-import lu.uni.student.shoppinglist.repository.dao.ShoppingListDao;
-import lu.uni.student.shoppinglist.repository.entities.ShoppingList;
+import lu.uni.student.shoppinglist.repository.ListDb;
+import lu.uni.student.shoppinglist.repository.dao.ListDao;
+import lu.uni.student.shoppinglist.repository.entities.ListEntity;
 
 public class ListEditActivity extends AppCompatActivity {
 
@@ -103,21 +103,21 @@ public class ListEditActivity extends AppCompatActivity {
         String displayName = textView.getText().toString();
         if (displayName.trim().length() == 0) displayName = getString(R.string.list_create_action_title);
 
-        ShoppingList shoppingList = new ShoppingList();
-        shoppingList.displayName = displayName;
-        shoppingList.id = this.shoppingListId;
-        shoppingList.parentId = this.parentShoppingListId;
-        shoppingList.iconIndex = listAdapter.getIndexOfSelectedIcon();
+        ListEntity listEntity = new ListEntity();
+        listEntity.displayName = displayName;
+        listEntity.id = this.shoppingListId;
+        listEntity.parentId = this.parentShoppingListId;
+        listEntity.iconIndex = listAdapter.getIndexOfSelectedIcon();
 
-        ShoppingListDb db = ShoppingListDb.getFileDatabase(getApplication());
-        ShoppingListDao dao = db.shoppingListModel();
+        ListDb db = ListDb.getFileDatabase(getApplication());
+        ListDao dao = db.shoppingListModel();
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         if (this.crudAction == Crud.CREATE) {
-            executor.execute(() -> dao.insert(shoppingList));
+            executor.execute(() -> dao.insert(listEntity));
         }
         else if (this.crudAction == Crud.UPDATE) {
-            executor.execute(() -> dao.update(shoppingList));
+            executor.execute(() -> dao.update(listEntity));
         }
 
         setResult(Request.REQUEST_RESPONSE);

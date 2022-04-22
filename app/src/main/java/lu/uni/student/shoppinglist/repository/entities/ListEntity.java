@@ -6,27 +6,25 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName="shopping_list_item",
-        foreignKeys = {@ForeignKey(entity = ShoppingList.class,
+@Entity(tableName="list",
+        foreignKeys = {@ForeignKey(entity = ListEntity.class,
                                    parentColumns = "id",
-                                   childColumns = "shoppingListId",
-                                   onDelete = ForeignKey.CASCADE) })
-public class ShoppingListItem {
+                                   childColumns = "parentId",
+                                   onDelete = ForeignKey.NO_ACTION) })
+public class ListEntity {
     @PrimaryKey(autoGenerate = true)
     public long id;
 
     @NonNull
-    public long shoppingListId;
-
-    @NonNull
     public String displayName;
-
-    public String description;
 
     @NonNull
     @ColumnInfo(defaultValue = "0")
-    public boolean flagPurchased;
+    public int iconIndex;
+
+    // Nullable !
+    public Long parentId;
 
     @NonNull
-    public boolean archived;
+    public boolean archivedFlag;
 }

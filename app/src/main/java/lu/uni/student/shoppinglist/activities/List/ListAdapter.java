@@ -28,16 +28,16 @@ import lu.uni.student.shoppinglist.activities.Crud;
 import lu.uni.student.shoppinglist.activities.Extra;
 import lu.uni.student.shoppinglist.activities.Item.ItemActivity;
 import lu.uni.student.shoppinglist.activities.Request;
-import lu.uni.student.shoppinglist.repository.ShoppingListDb;
-import lu.uni.student.shoppinglist.repository.dao.ShoppingListDao;
-import lu.uni.student.shoppinglist.repository.dao.ShoppingListItemDao;
-import lu.uni.student.shoppinglist.repository.entities.ShoppingList;
-import lu.uni.student.shoppinglist.repository.entities.ShoppingListWithCalculatedValues;
+import lu.uni.student.shoppinglist.repository.ListDb;
+import lu.uni.student.shoppinglist.repository.dao.ListDao;
+import lu.uni.student.shoppinglist.repository.dao.ListItemDao;
+import lu.uni.student.shoppinglist.repository.entities.ListEntity;
+import lu.uni.student.shoppinglist.repository.entities.ListEntityWithCalculatedValues;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private final Activity activity;
-    private final List<ShoppingListWithCalculatedValues> localDataSet;
+    private final List<ListEntityWithCalculatedValues> localDataSet;
     private final int[] imageId;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -59,7 +59,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         }
     }
 
-    public ListAdapter(Activity activity, List<ShoppingListWithCalculatedValues> dataSet, int[] imageId) {
+    public ListAdapter(Activity activity, List<ListEntityWithCalculatedValues> dataSet, int[] imageId) {
         this.activity = activity;
         this.localDataSet = dataSet;
         this.imageId = imageId;
@@ -77,7 +77,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int position) {
 
-        ShoppingListWithCalculatedValues item = localDataSet.get(position);
+        ListEntityWithCalculatedValues item = localDataSet.get(position);
 
         String listName = item.displayName;
         viewHolder.listName.setText(listName);
@@ -96,9 +96,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
         viewHolder.buttonViewOption.setOnClickListener(view -> {
 
-            ShoppingListDb db = ShoppingListDb.getFileDatabase(this.activity);
-            ShoppingListDao daoList = db.shoppingListModel();
-            ShoppingListItemDao daoItems = db.shoppingListItemModel();
+            ListDb db = ListDb.getFileDatabase(this.activity);
+            ListDao daoList = db.shoppingListModel();
+            ListItemDao daoItems = db.shoppingListItemModel();
 
             PopupMenu popupMenu = new PopupMenu(this.activity, viewHolder.buttonViewOption);
             popupMenu.inflate(R.menu.list_row_menu);
@@ -124,7 +124,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         return localDataSet.size();
     }
 
-    private void editList(ShoppingList item) {
+    private void editList(ListEntity item) {
         Intent intent = new Intent(this.activity, ListEditActivity.class);
         intent.putExtra(Extra.CRUD, Crud.UPDATE);
         intent.putExtra(Extra.LIST_ID, item.id);
@@ -140,7 +140,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         this.activity.startActivityForResult(intent, Request.UPDATE_REQUEST);
     }
 
-    private void deleteList(ShoppingListDao daoList, long id) {
+    private void deleteList(ListDao daoList, long id) {
 
         Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
         mainThreadHandler.post(() -> {
@@ -158,7 +158,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
                 @Override
                 public void onDismissed(Snackbar snackbar, int event) {
-                if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT || event == Snackbar.Callback.DISMISS_EVENT_MANUAL) {
                     // Permanently delete the list
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     executor.execute(() -> deleteListRecursively(daoList, id));
@@ -173,10 +173,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         executor.execute(() -> daoList.archive(id));
     }
 
-    private void deleteListRecursively(ShoppingListDao daoList, long id) {
-        List<ShoppingList> childLists = daoList.getListsToCopy(id);
+    private void deleteListRecursively(ListDao daoList, long id) {
+        List<ListEntity> childLists = daoList.getListsToCopy(id);
         if (childLists.size() != 0) {
-            for (ShoppingList listItem : childLists) {
+            for (ListEntity listItem : childLists) {
                 deleteListRecursively(daoList, listItem.id);
                 daoList.delete(listItem.id);
             }
@@ -184,7 +184,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         daoList.delete(id);
     }
 
-    private void copyList(ShoppingListDao daoList, ShoppingListItemDao daoItems, ShoppingList item, Long parentId, boolean modifyListName) {
+    private void copyList(ListDao daoList, ListItemDao daoItems, ListEntity item, Long parentId, boolean modifyListName) {
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
@@ -201,19 +201,19 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         });
     }
 
-    private void copyListRecursively(ShoppingListDao daoList, ShoppingListItemDao daoItems, ShoppingList item, Long parentId, boolean modifyListName) {
-        ShoppingList newShoppingList = new ShoppingList();
-        newShoppingList.iconIndex = item.iconIndex;
-        newShoppingList.parentId = parentId;
-        newShoppingList.displayName = item.displayName;
-        if (modifyListName) newShoppingList.displayName += " - " + this.activity.getResources().getString(R.string.list_copy);
+    private void copyListRecursively(ListDao daoList, ListItemDao daoItems, ListEntity item, Long parentId, boolean modifyListName) {
+        ListEntity newListEntity = new ListEntity();
+        newListEntity.iconIndex = item.iconIndex;
+        newListEntity.parentId = parentId;
+        newListEntity.displayName = item.displayName;
+        if (modifyListName) newListEntity.displayName += " - " + this.activity.getResources().getString(R.string.list_copy);
 
-        newShoppingList.id = daoList.insert(newShoppingList);
-        daoItems.copy(item.id, newShoppingList.id);
+        newListEntity.id = daoList.insert(newListEntity);
+        daoItems.copy(item.id, newListEntity.id);
 
-        List<ShoppingList> childLists = daoList.getListsToCopy(item.id);
-        for(ShoppingList listItem : childLists) {
-            copyListRecursively(daoList, daoItems, listItem, newShoppingList.id, false);
+        List<ListEntity> childLists = daoList.getListsToCopy(item.id);
+        for(ListEntity listItem : childLists) {
+            copyListRecursively(daoList, daoItems, listItem, newListEntity.id, false);
         }
     }
 }
