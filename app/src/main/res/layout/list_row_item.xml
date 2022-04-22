@@ -29,8 +29,8 @@
                 android:src="@drawable/type11"
                 android:id="@+id/list_image"
                 android:scaleType="centerInside"
-                android:layout_height="35dp"
-                android:layout_width="35dp" />
+                android:layout_height="32dp"
+                android:layout_width="32dp" />
 
             <TextView
                 android:id="@+id/list_name"

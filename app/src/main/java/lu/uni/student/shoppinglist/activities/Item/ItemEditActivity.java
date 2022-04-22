@@ -95,7 +95,7 @@ public class ItemEditActivity extends AppCompatActivity {
     }
 
     /*
-     * Click handler for the button.
+     * Click handler for the floating button.
      */
     public void buttonClick(View view) {
 

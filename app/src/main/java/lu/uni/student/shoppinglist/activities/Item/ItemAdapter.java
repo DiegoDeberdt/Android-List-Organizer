@@ -143,7 +143,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             undoDelete.setAction(R.string.snackbar_list_delete_undo, view -> {
                 // The user clicked the UNDO button so restore the list item
                 ExecutorService undoExecutor = Executors.newSingleThreadExecutor();
-                undoExecutor.execute(()-> dao.restore(id););
+                undoExecutor.execute(()-> dao.restore(id));
             });
 
             undoDelete.addCallback(new Snackbar.Callback() {

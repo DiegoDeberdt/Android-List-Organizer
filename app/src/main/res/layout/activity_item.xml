@@ -9,7 +9,7 @@
     tools:context=".activities.Item.ItemActivity">
 
     <ImageView
-        android:src="@drawable/background_image_5"
+        android:src="@drawable/background_image_2"
         android:id="@+id/backgroundImage"
         android:scaleType="centerInside"
         android:layout_height="wrap_content"

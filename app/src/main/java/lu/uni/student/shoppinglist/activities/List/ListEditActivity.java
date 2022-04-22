@@ -95,6 +95,9 @@ public class ListEditActivity extends AppCompatActivity {
         }
     }
 
+    /*
+     * Click handler for the floating button.
+     */
     public void buttonClick(View view) {
         TextInputEditText textView = findViewById(R.id.listEditName);
         String displayName = textView.getText().toString();
