@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="lu.uni.student.shoppinglist">
+    package="lu.uni.student.dbdo">
 
     <application
         android:allowBackup="true"
@@ -10,22 +10,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ShoppingList">
         <activity
-            android:name=".DrawerBaseActivity"
+            android:name="lu.uni.student.dbdo.DrawerBaseActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.Item.ItemEditActivity"
+            android:name="lu.uni.student.dbdo.activities.Item.ItemEditActivity"
             android:exported="false"
             android:label="@string/item_edit_action_title" />
         <activity
-            android:name=".activities.List.ListEditActivity"
+            android:name="lu.uni.student.dbdo.activities.List.ListEditActivity"
             android:exported="false"
             android:label="@string/list_edit" />
         <activity
-            android:name=".activities.Item.ItemActivity"
+            android:name="lu.uni.student.dbdo.activities.Item.ItemActivity"
             android:exported="false"
             android:label="@string/list_items" />
         <activity
-            android:name=".activities.List.ListActivity"
+            android:name="lu.uni.student.dbdo.activities.List.ListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
