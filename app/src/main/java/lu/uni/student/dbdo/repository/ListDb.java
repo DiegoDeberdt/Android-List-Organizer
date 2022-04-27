@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 import lu.uni.student.dbdo.repository.dao.*;
 import lu.uni.student.dbdo.repository.entities.*;
 
-@Database(entities = {ListEntity.class, ListItemEntity.class}, version = 1)
+@Database(entities = {ListEntity.class, ListItemEntity.class}, version = 2, exportSchema = false)
 public abstract class ListDb extends RoomDatabase {
 
     private static ListDb INSTANCE;

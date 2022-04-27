@@ -1,11 +1,11 @@
 package lu.uni.student.dbdo.activities.Item;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import lu.uni.student.dbdo.ExtrasNotFoundException;
-import lu.uni.student.dbdo.R;
+import lu.uni.student.dbdo.*;
 import lu.uni.student.dbdo.activities.Crud;
 import lu.uni.student.dbdo.activities.Extra;
 import lu.uni.student.dbdo.activities.List.ListAdapter;
@@ -39,8 +39,6 @@ public class ItemActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
-
-        Context context = this;
 
         Intent intent = getIntent();
 
@@ -85,7 +83,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(BUNDLE_ID, this.shoppingListId);
     }
@@ -104,16 +102,13 @@ public class ItemActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
 
-        switch (item.getItemId()) {
-            case R.id.option_create_list:
-                createNewList();
-                return true;
-            case R.id.option_reset_finished_items:
-                resetAllItemsInList();
-                return true;
-            default:
-                throw new RuntimeException("Unhandled option");
-        }
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.option_create_list) createNewList();
+        else if (itemId == R.id.option_reset_finished_items) resetAllItemsInList();
+        else throw new RuntimeException("Unhandled option");
+
+        return true;
     }
 
     private void resetAllItemsInList() {

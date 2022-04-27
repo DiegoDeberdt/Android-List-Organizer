@@ -4,9 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName="list",
+        indices = {@Index(name="ParentIdIndex", value="parentId", unique = false)},
         foreignKeys = {@ForeignKey(entity = ListEntity.class,
                                    parentColumns = "id",
                                    childColumns = "parentId",
