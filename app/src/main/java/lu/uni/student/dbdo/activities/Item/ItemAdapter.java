@@ -2,8 +2,6 @@ package lu.uni.student.dbdo.activities.Item;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +9,8 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.core.os.HandlerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -33,6 +31,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
 
     private final Activity activity;
     private final List<ListItemEntity> localDataSet;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -59,7 +58,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     }
 
     @Override
-    public ItemAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public ItemAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
 
         View view = LayoutInflater.from(viewGroup.getContext())
                                   .inflate(R.layout.item_row_item, viewGroup, false);
@@ -79,8 +78,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         viewHolder.itemCheckbox.setOnClickListener(view -> {
 
             // Handle the user clicking on the checkbox
-
-            ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
                 ListDb db = ListDb.getFileDatabase(this.activity);
                 ListItemDao dao = db.shoppingListItemModel();
@@ -101,67 +98,60 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             }
         });
 
-        viewHolder.buttonViewOption.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        viewHolder.buttonViewOption.setOnClickListener(view -> {
 
-                PopupMenu popup = new PopupMenu(activity, viewHolder.buttonViewOption);
-                popup.inflate(R.menu.item_row_menu);
-                popup.setOnMenuItemClickListener(menuItem -> {
-                    switch (menuItem.getItemId()) {
-                        case R.id.menu_item_edit:
-                            onMenuItemEditClicked(item);
-                            return true;
-                        case R.id.menu_item_delete:
-                            onMenuItemDeleteClicked(item.id);
-                            return true;
-                        default:
-                            return false;
-                    }
-                });
+            PopupMenu popup = new PopupMenu(activity, viewHolder.buttonViewOption);
+            popup.inflate(R.menu.item_row_menu);
+            popup.setOnMenuItemClickListener(menuItem -> {
+                switch (menuItem.getItemId()) {
+                    case R.id.menu_item_edit:
+                        onMenuItemEditClicked(item);
+                        return true;
+                    case R.id.menu_item_delete:
+                        onMenuItemDeleteClicked(item.id);
+                        return true;
+                    default:
+                        return false;
+                }
+            });
 
-                popup.show();
-            }
+            popup.show();
         });
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return localDataSet.size();
     }
 
     private void onMenuItemDeleteClicked(long id) {
+
         ListDb db = ListDb.getFileDatabase(activity);
         ListItemDao dao = db.shoppingListItemModel();
 
-        Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
-        mainThreadHandler.post(() -> {
-            View contextView = this.activity.findViewById(R.id.item_fab);
-            Snackbar undoDelete = Snackbar.make(contextView, R.string.snackbar_item_deleted, Snackbar.LENGTH_LONG);
+        View contextView = this.activity.findViewById(R.id.item_fab);
+        Snackbar undoDeleteSnackbar = Snackbar.make(contextView, R.string.snackbar_item_deleted, Snackbar.LENGTH_LONG);
 
-            undoDelete.setAction(R.string.snackbar_list_delete_undo, view -> {
-                // The user clicked the UNDO button so restore the list item
-                ExecutorService undoExecutor = Executors.newSingleThreadExecutor();
-                undoExecutor.execute(()-> dao.restore(id));
-            });
-
-            undoDelete.addCallback(new Snackbar.Callback() {
-
-                @Override
-                public void onDismissed(Snackbar snackbar, int event) {
-                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT || event == Snackbar.Callback.DISMISS_EVENT_MANUAL) {
-                        // Permanently delete the archived list item
-                        ExecutorService executor = Executors.newSingleThreadExecutor();
-                        executor.execute(() -> dao.delete(id));
-                    }
-                }
-            });
-            undoDelete.show();
+        undoDeleteSnackbar.setAction(R.string.snackbar_list_delete_undo, view -> {
+            // The user clicked the UNDO button so restore the list item
+            executor.execute(()-> dao.restore(id));
         });
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> dao.archive(id));
+        undoDeleteSnackbar.addCallback(new Snackbar.Callback() {
+
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT || event == Snackbar.Callback.DISMISS_EVENT_MANUAL) {
+                    // Permanently delete the archived list item
+                    executor.execute(() -> dao.delete(id));
+                }
+            }
+        });
+
+        executor.execute(() -> {
+            dao.archive(id);
+            undoDeleteSnackbar.show();
+        });
     }
 
     private void onMenuItemEditClicked(ListItemEntity item) {

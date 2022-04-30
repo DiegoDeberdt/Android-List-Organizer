@@ -1,6 +1,7 @@
 package lu.uni.student.dbdo.activities.List;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -65,7 +66,7 @@ public class ListEditActivity extends AppCompatActivity {
         RecyclerView imageList = findViewById(R.id.imageList);
         imageList.setAdapter(listAdapter);
 
-        GridLayoutManager layoutManager = null;
+        GridLayoutManager layoutManager;
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             layoutManager = new GridLayoutManager(this, 5);
         }

@@ -3,8 +3,6 @@ package lu.uni.student.dbdo.activities.List;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.core.os.HandlerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -36,6 +33,7 @@ import lu.uni.student.dbdo.repository.entities.ListEntityWithCalculatedValues;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Activity activity;
     private final List<ListEntityWithCalculatedValues> localDataSet;
     private final int[] imageId;
@@ -66,7 +64,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
 
         View view = LayoutInflater.from(viewGroup.getContext())
                                   .inflate(R.layout.list_row_item, viewGroup, false);
@@ -131,6 +129,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         intent.putExtra(Extra.NAME, item.displayName);
         intent.putExtra(Extra.IMAGE_INDEX, item.iconIndex);
         intent.putExtra(Extra.PARENT_ID, item.parentId);
+
         if (item.parentId != null) {
             Bundle bundle = new Bundle();
             bundle.putLong(Extra.PARENT_ID, item.parentId);
@@ -142,35 +141,29 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private void deleteList(ListDao daoList, long id) {
 
-        Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
-        mainThreadHandler.post(() -> {
+        View contextView = this.activity.findViewById(R.id.list_row_options);
+        Snackbar undoDeleteSnackbar = Snackbar.make(contextView, R.string.snackbar_list_deleted, Snackbar.LENGTH_LONG);
 
-            View contextView = this.activity.findViewById(R.id.list_row_options);
-            Snackbar undoDelete = Snackbar.make(contextView, R.string.snackbar_list_deleted, Snackbar.LENGTH_LONG);
-
-            undoDelete.setAction(R.string.snackbar_list_delete_undo, view -> {
-                // The user clicked the UNDO button so restore the list
-                ExecutorService undoExecutor = Executors.newSingleThreadExecutor();
-                undoExecutor.execute(()-> daoList.restore(id));
-            });
-
-            undoDelete.addCallback(new Snackbar.Callback() {
-
-                @Override
-                public void onDismissed(Snackbar snackbar, int event) {
-                if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT || event == Snackbar.Callback.DISMISS_EVENT_MANUAL) {
-                    // Permanently delete the list
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    executor.execute(() -> deleteListRecursively(daoList, id));
-                }
-                }
-            });
-
-            undoDelete.show();
+        undoDeleteSnackbar.setAction(R.string.snackbar_list_delete_undo, view -> {
+            // The user clicked the UNDO button so restore the list
+            executor.execute(()-> daoList.restore(id));
         });
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> daoList.archive(id));
+        undoDeleteSnackbar.addCallback(new Snackbar.Callback() {
+
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+            if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT || event == Snackbar.Callback.DISMISS_EVENT_MANUAL) {
+                // Permanently delete the list
+                executor.execute(() -> deleteListRecursively(daoList, id));
+            }
+            }
+        });
+
+        executor.execute(() ->{
+            daoList.archive(id);
+            undoDeleteSnackbar.show();
+        });
     }
 
     private void deleteListRecursively(ListDao daoList, long id) {
@@ -186,18 +179,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     private void copyList(ListDao daoList, ListItemDao daoItems, ListEntity item, Long parentId, boolean modifyListName) {
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
+        View contextView = this.activity.findViewById(R.id.list_row_options);
+        Snackbar snackbar = Snackbar.make(contextView, R.string.snackbar_list_copied, Snackbar.LENGTH_SHORT);
 
         executor.execute(() -> {
-
             copyListRecursively(daoList, daoItems, item, parentId, modifyListName);
-
-            mainThreadHandler.post(() -> {
-
-                View contextView = this.activity.findViewById(R.id.list_row_options);
-                Snackbar.make(contextView, R.string.snackbar_list_copied, Snackbar.LENGTH_SHORT).show();
-            });
+            snackbar.show();
         });
     }
 
