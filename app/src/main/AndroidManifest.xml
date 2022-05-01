@@ -10,9 +10,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ShoppingList">
         <activity
-            android:name="lu.uni.student.dbdo.DrawerBaseActivity"
-            android:exported="false" />
-        <activity
             android:name="lu.uni.student.dbdo.activities.Item.ItemEditActivity"
             android:exported="false"
             android:label="@string/item_edit_action_title" />
