@@ -1,4 +1,4 @@
-# List-Organizer (Android Application Analysis)
+# List-Organizer (Android Application)
 
 ## Overview
 The **List-Organizer** Android application is designed to help users manage (shopping) lists and their associated items. It supports adding, updating, and deleting shopping lists and items, with features like undo delete and real-time updates.
